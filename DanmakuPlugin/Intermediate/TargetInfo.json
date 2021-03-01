@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "DanmakuPlugin",
+			"Path": "C:\\DanmakuPlugin\\Source\\DanmakuPlugin.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "DanmakuPluginEditor",
+			"Path": "C:\\DanmakuPlugin\\Source\\DanmakuPluginEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

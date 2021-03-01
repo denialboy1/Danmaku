@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-Danmaku.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\DanmakuPlugin\Intermediate\Build\Win64\DanmakuPluginEditor\Development\UnrealEd\SharedPCH.UnrealEd.ShadowErrors.h.obj"
+"C:\DanmakuPlugin\Plugins\Danmaku\Intermediate\Build\Win64\UE4Editor\Development\Danmaku\Module.Danmaku.cpp.obj"
+"C:\DanmakuPlugin\Plugins\Danmaku\Intermediate\Build\Win64\UE4Editor\Development\Danmaku\Default.rc2.res"
+/OUT:"C:\DanmakuPlugin\Plugins\Danmaku\Intermediate\Build\Win64\UE4Editor\Development\Danmaku\UE4Editor-Danmaku.lib"
+/INCLUDE:IMPLEMENT_MODULE_Danmaku

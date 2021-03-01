@@ -1,0 +1,9 @@
+{
+	"SourceFiles": [
+		"C:\\DanmakuPlugin\\Source\\DanmakuPlugin\\DanmakuPlugin.Build.cs",
+		"C:\\DanmakuPlugin\\Plugins\\Danmaku\\Source\\Danmaku\\Danmaku.Build.cs",
+		"C:\\DanmakuPlugin\\Source\\DanmakuPlugin.Target.cs",
+		"C:\\DanmakuPlugin\\Source\\DanmakuPluginEditor.Target.cs"
+	],
+	"EngineVersion": "4.26.1"
+}

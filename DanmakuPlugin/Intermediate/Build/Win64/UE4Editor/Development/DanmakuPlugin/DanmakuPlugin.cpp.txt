@@ -1,0 +1,2 @@
+C:\DanmakuPlugin\Intermediate\Build\Win64\UE4Editor\Development\DanmakuPlugin\Definitions.DanmakuPlugin.h
+C:\DanmakuPlugin\Source\DanmakuPlugin\DanmakuPlugin.h

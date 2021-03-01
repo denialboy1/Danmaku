@@ -1,0 +1,10 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.Danmaku.cpp.obj": [
+			"Danmaku.cpp.obj",
+			"DanmakuCommands.cpp.obj",
+			"DanmakuStyle.cpp.obj"
+		]
+	}
+}
