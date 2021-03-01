@@ -1,3 +1,0 @@
-C:\DanmakuPlugin\Intermediate\Build\Win64\UE4Editor\Development\DanmakuPlugin\Definitions.DanmakuPlugin.h
-C:\UE_4.26\Engine\Source\Runtime\CoreUObject\Public\UObject/GeneratedCppIncludes.h
-C:\UE_4.26\Engine\Source\Runtime\CoreUObject\Public\UObject/MetaData.h
