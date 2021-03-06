@@ -10,8 +10,20 @@
  * 
  */
 UCLASS()
-class DANMAKUPLUGIN_API UBulletMovementComponent : public UMovementComponent
+class DANMAKU_API UBulletMovementComponent : public UMovementComponent
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	float Angle;
 	
+	UPROPERTY(EditAnywhere)
+	float AngleAccelation;
+
+	UPROPERTY(EditAnywhere)
+	float Speed;
+
+	UPROPERTY(EditAnywhere)
+	float SpeedAccelation;
+
 };
