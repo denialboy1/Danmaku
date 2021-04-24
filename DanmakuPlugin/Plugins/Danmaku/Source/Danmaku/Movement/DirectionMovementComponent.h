@@ -9,11 +9,12 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = Movement, meta = (BlueprintSpawnableComponent), ShowCategories = (Velocity))
 class DANMAKU_API UDirectionMovementComponent : public UBulletMovementComponent
 {
 	GENERATED_BODY()
 	
 public:
+	virtual void InitializeComponent() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 };

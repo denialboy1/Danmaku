@@ -25,7 +25,7 @@ public class Danmaku : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
+				"Core","AssetTools","PropertyEditor","EditorStyle"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -42,6 +42,7 @@ public class Danmaku : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"AssetTools",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

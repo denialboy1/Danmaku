@@ -1,13 +1,25 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Danmaku.h"
+
+#include "Danmaku/Editor/DanmakuDetails.h"
+#include "Danmaku/Editor/SDanmakuEditorViewport.h"
+#include "Danmaku/Editor/FBulletAssetActions.h"
+#include "Danmaku/Bullet/Bullet.h"
+
 #include "DanmakuStyle.h"
 #include "DanmakuCommands.h"
-#include "LevelEditor.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
 #include "ToolMenus.h"
+#include "Widgets/Layout/SUniformGridPanel.h"
+#include "AssetToolsModule.h"
+
+//#include "Danmaku/Editor/BulletAsset.h"
+#include "Danmaku/Editor/FBulletDetails.h"
+#include "PropertyEditorDelegates.h"
+
 
 static const FName DanmakuTabName("Danmaku");
 
@@ -34,6 +46,28 @@ void FDanmakuModule::StartupModule()
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(DanmakuTabName, FOnSpawnTab::CreateRaw(this, &FDanmakuModule::OnSpawnPluginTab))
 		.SetDisplayName(LOCTEXT("FDanmakuTabTitle", "Danmaku"))
 		.SetMenuType(ETabSpawnerMenuType::Hidden);
+
+
+	// register custom types:
+	{
+		IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
+		// add custom category
+		EAssetTypeCategories::Type DanmakuCategory = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("Danmaku")), FText::FromString("Danmaku"));
+		// register our custom asset with example category
+		TSharedPtr<IAssetTypeActions> Action = MakeShareable(new FBulletAssetActions(DanmakuCategory));
+		AssetTools.RegisterAssetTypeActions(Action.ToSharedRef());
+		// saved it here for unregister later
+		CreatedAssetTypeActions.Add(Action);
+	}
+
+
+	// register custom layouts
+	{
+		static FName PropertyEditor("PropertyEditor");
+		FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>(PropertyEditor);
+		PropertyModule.RegisterCustomClassLayout(ABullet::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FBulletDetails::MakeInstance));
+	}
+
 }
 
 void FDanmakuModule::ShutdownModule()
@@ -50,6 +84,29 @@ void FDanmakuModule::ShutdownModule()
 	FDanmakuCommands::Unregister();
 
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(DanmakuTabName);
+
+	FCoreDelegates::OnPostEngineInit.RemoveAll(this);
+
+
+
+	// Unregister all the asset types that we registered
+	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
+	{
+		IAssetTools& AssetTools = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools").Get();
+		for (int32 i = 0; i < CreatedAssetTypeActions.Num(); ++i)
+		{
+			AssetTools.UnregisterAssetTypeActions(CreatedAssetTypeActions[i].ToSharedRef());
+		}
+	}
+	CreatedAssetTypeActions.Empty();
+
+
+	// unregister custom layouts
+	if (FModuleManager::Get().IsModuleLoaded("PropertyEditor"))
+	{
+		FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
+		PropertyModule.UnregisterCustomClassLayout(ABullet::StaticClass()->GetFName());
+	}
 }
 
 TSharedRef<SDockTab> FDanmakuModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
@@ -60,17 +117,20 @@ TSharedRef<SDockTab> FDanmakuModule::OnSpawnPluginTab(const FSpawnTabArgs& Spawn
 		FText::FromString(TEXT("Danmaku.cpp"))
 		);
 
+	//여기서는 총알 및 패턴 리스트를 볼수 있는 에디터 생성.
+
 	return SNew(SDockTab)
-		.TabRole(ETabRole::NomadTab)
+		.TabRole(ETabRole::MajorTab)
 		[
 			// Put your tab content here!
-			SNew(SBox)
-			.HAlign(HAlign_Center)
-			.VAlign(VAlign_Center)
-			[
-				SNew(STextBlock)
-				.Text(WidgetText)
-			]
+				SNew(SUniformGridPanel)
+				+ SUniformGridPanel::Slot(0, 0)
+		.HAlign(HAlign_Fill)
+		.VAlign(VAlign_Fill)
+		[
+			SNew(SDanmakuEditorViewport)
+		]
+			
 		];
 }
 
@@ -78,6 +138,7 @@ void FDanmakuModule::PluginButtonClicked()
 {
 	FGlobalTabmanager::Get()->TryInvokeTab(DanmakuTabName);
 }
+
 
 void FDanmakuModule::RegisterMenus()
 {
