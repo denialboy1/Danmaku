@@ -9,106 +9,134 @@
 #include "Editor.h"
 #include "Widgets/Input/SHyperlink.h"
 #include "SourceCodeNavigation.h"
+#include "Widgets/Layout/SUniformGridPanel.h"
 
+#define LOCTEXT_NAMESPACE "BulletEditor"
 
-#define LOCTEXT_NAMESPACE "GenericEditor"
-
-const FName FBulletAssetEditor::ToolkitFName(TEXT("GenericAssetEditor"));
-const FName FBulletAssetEditor::PropertiesTabId(TEXT("GenericEditor_Properties"));
+const FName FBulletAssetEditor::ToolkitFName(TEXT("BulletEditor"));
+const FName FBulletAssetEditor::BulletEditorAppIdentifier(TEXT("BulletEditorApp"));
+const FName FBulletAssetEditor::MovementListTabId(TEXT("MovementListTab"));
+const FName FBulletAssetEditor::BulletActorTabId(TEXT("BulletActorTab"));
+const FName FBulletAssetEditor::ViewportTabId(TEXT("ViewportTab"));
+const FName FBulletAssetEditor::DetailTabId(TEXT("DetailTab"));
 
 void FBulletAssetEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager)
 {
-	WorkspaceMenuCategory = InTabManager->AddLocalWorkspaceMenuCategory(LOCTEXT("WorkspaceMenu_GenericAssetEditor", "Asset Editor"));
+	WorkspaceMenuCategory = InTabManager->AddLocalWorkspaceMenuCategory(LOCTEXT("WorkspaceMenu_BulletAssetEditor", "Asset Editor"));
 
 	FAssetEditorToolkit::RegisterTabSpawners(InTabManager);
 
-	InTabManager->RegisterTabSpawner(PropertiesTabId, FOnSpawnTab::CreateSP(this, &FBulletAssetEditor::SpawnPropertiesTab))
-		.SetDisplayName(LOCTEXT("PropertiesTab", "Details"))
+	InTabManager->RegisterTabSpawner(MovementListTabId, FOnSpawnTab::CreateSP(this, &FBulletAssetEditor::SpawnMovementListTab))
+		.SetDisplayName(LOCTEXT("BulletTab", "Bullet"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
 		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
+
+	InTabManager->RegisterTabSpawner(BulletActorTabId, FOnSpawnTab::CreateSP(this, &FBulletAssetEditor::SpawnBulletActorTab))
+		.SetDisplayName(LOCTEXT("BulletTab", "Bullet"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
+		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
+
+	InTabManager->RegisterTabSpawner(ViewportTabId, FOnSpawnTab::CreateSP(this, &FBulletAssetEditor::SpawnViewportTab))
+		.SetDisplayName(LOCTEXT("BulletTab", "Bullet"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
+		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
+
+	InTabManager->RegisterTabSpawner(DetailTabId, FOnSpawnTab::CreateSP(this, &FBulletAssetEditor::SpawnDetailTab))
+		.SetDisplayName(LOCTEXT("BulletTab", "Bullet"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
+		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
+}
+
+TSharedRef<SDockTab> FBulletAssetEditor::SpawnMovementListTab(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == MovementListTabId);
+
+	return SNew(SDockTab)
+		.Icon(FEditorStyle::GetBrush("BulletEditor.Tabs.Properties"))
+		.Label(LOCTEXT("BulletDetailsTitle", "Details"))
+		.TabColorScale(GetTabColorScale())
+		[
+			SNew(SUniformGridPanel)
+			+ SUniformGridPanel::Slot(0, 0)
+		.HAlign(HAlign_Fill)
+		.VAlign(VAlign_Fill)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString("InnerTab2"))
+		]
+	+ SUniformGridPanel::Slot(1, 0)
+		.HAlign(HAlign_Fill)
+		.VAlign(VAlign_Fill)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString("InnerTab2"))
+		]
+	+ SUniformGridPanel::Slot(0, 1)
+		.HAlign(HAlign_Fill)
+		.VAlign(VAlign_Fill)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString("InnerTab2"))
+		]
+	+ SUniformGridPanel::Slot(1, 1)
+		.HAlign(HAlign_Fill)
+		.VAlign(VAlign_Fill)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString("InnerTab2"))
+		]
+		];
+}
+
+TSharedRef<SDockTab> FBulletAssetEditor::SpawnBulletActorTab(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == BulletActorTabId);
+
+	return SNew(SDockTab)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString("BulletActor"))
+		];
+}
+
+TSharedRef<SDockTab> FBulletAssetEditor::SpawnViewportTab(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == ViewportTabId);
+
+	return SNew(SDockTab)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString("Viewport"))
+		];
+}
+
+TSharedRef<SDockTab> FBulletAssetEditor::SpawnDetailTab(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == DetailTabId);
+
+	return SNew(SDockTab)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString("Detail"))
+		];
 }
 
 void FBulletAssetEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager)
 {
 	FAssetEditorToolkit::UnregisterTabSpawners(InTabManager);
 
-	InTabManager->UnregisterTabSpawner(PropertiesTabId);
+	InTabManager->UnregisterTabSpawner(MovementListTabId);
+	InTabManager->UnregisterTabSpawner(BulletActorTabId);
+	InTabManager->UnregisterTabSpawner(ViewportTabId);
+	InTabManager->UnregisterTabSpawner(DetailTabId);
 }
-
-const FName FBulletAssetEditor::SimpleEditorAppIdentifier(TEXT("GenericEditorApp"));
 
 FBulletAssetEditor::~FBulletAssetEditor()
 {
 	GEditor->GetEditorSubsystem<UImportSubsystem>()->OnAssetPostImport.RemoveAll(this);
 	GEditor->OnObjectsReplaced().RemoveAll(this);
 
-	DetailsView.Reset();
 	PropertiesTab.Reset();
-}
-
-
-void FBulletAssetEditor::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit, FGetDetailsViewObjects GetDetailsViewObjects)
-{
-	const bool bIsUpdatable = false;
-	const bool bAllowFavorites = true;
-	const bool bIsLockable = false;
-
-	EditingObjects = ObjectsToEdit;
-	GEditor->GetEditorSubsystem<UImportSubsystem>()->OnAssetPostImport.AddSP(this, &FBulletAssetEditor::HandleAssetPostImport);
-	GEditor->OnObjectsReplaced().AddSP(this, &FBulletAssetEditor::OnObjectsReplaced);
-
-	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-	const FDetailsViewArgs DetailsViewArgs(bIsUpdatable, bIsLockable, true, FDetailsViewArgs::ObjectsUseNameArea, false);
-	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_SimpleAssetEditor_Layout_v3")
-		->AddArea
-		(
-			FTabManager::NewPrimaryArea()->SetOrientation(Orient_Vertical)
-			->Split
-			(
-				FTabManager::NewStack()
-				->SetSizeCoefficient(0.1f)
-				->SetHideTabWell(true)
-				//->AddTab(GetToolbarTabId(), ETabState::OpenedTab)
-			)
-			->Split
-			(
-				FTabManager::NewSplitter()
-				->Split
-				(
-					FTabManager::NewStack()
-					//->AddTab(PropertiesTabId, ETabState::OpenedTab)
-				)
-			)
-		);
-
-	const bool bCreateDefaultStandaloneMenu = true;
-	const bool bCreateDefaultToolbar = true;
-	FAssetEditorToolkit::InitAssetEditor(Mode, InitToolkitHost, FBulletAssetEditor::SimpleEditorAppIdentifier, StandaloneDefaultLayout, bCreateDefaultStandaloneMenu, bCreateDefaultToolbar, ObjectsToEdit);
-
-	RegenerateMenusAndToolbars();
-	// @todo toolkit world centric editing
-	// Setup our tool's layout
-	/*if( IsWorldCentricAssetEditor() && !PropertiesTab.IsValid() )
-	{
-		const FString TabInitializationPayload(TEXT(""));		// NOTE: Payload not currently used for asset properties
-		SpawnToolkitTab(GetToolbarTabId(), FString(), EToolkitTabSpot::ToolBar);
-		PropertiesTab = SpawnToolkitTab( PropertiesTabId, TabInitializationPayload, EToolkitTabSpot::Details );
-	}*/
-
-	// Get the list of objects to edit the details of
-	const TArray<UObject*> ObjectsToEditInDetailsView = (GetDetailsViewObjects.IsBound()) ? GetDetailsViewObjects.Execute(ObjectsToEdit) : ObjectsToEdit;
-
-	// Ensure all objects are transactable for undo/redo in the details panel
-	for (UObject* ObjectToEditInDetailsView : ObjectsToEditInDetailsView)
-	{
-		ObjectToEditInDetailsView->SetFlags(RF_Transactional);
-	}
-
-	if (DetailsView.IsValid())
-	{
-		// Make sure details window is pointing to our object
-		DetailsView->SetObjects(ObjectsToEditInDetailsView);
-	}
 }
 
 FName FBulletAssetEditor::GetToolkitFName() const
@@ -118,7 +146,7 @@ FName FBulletAssetEditor::GetToolkitFName() const
 
 FText FBulletAssetEditor::GetBaseToolkitName() const
 {
-	return LOCTEXT("AppLabel", "Generic Asset Editor");
+	return LOCTEXT("AppLabel", "Bullet Asset Editor");
 }
 
 FText FBulletAssetEditor::GetToolkitName() const
@@ -223,111 +251,90 @@ FText FBulletAssetEditor::GetToolkitToolTipText() const
 	}
 }
 
+FString FBulletAssetEditor::GetWorldCentricTabPrefix() const
+{
+	return LOCTEXT("WorldCentricTabPrefix", "Bullet Asset ").ToString();
+}
+
+
 FLinearColor FBulletAssetEditor::GetWorldCentricTabColorScale() const
 {
-	return FLinearColor(0.5f, 0.0f, 0.0f, 0.5f);
+	return FLinearColor(0.5f, 0.0f, 1.0f, 0.5f);
 }
 
-void FBulletAssetEditor::SetPropertyVisibilityDelegate(FIsPropertyVisible InVisibilityDelegate)
-{
-	DetailsView->SetIsPropertyVisibleDelegate(InVisibilityDelegate);
-	DetailsView->ForceRefresh();
-}
 
-void FBulletAssetEditor::SetPropertyEditingEnabledDelegate(FIsPropertyEditingEnabled InPropertyEditingDelegate)
-{
-	DetailsView->SetIsPropertyEditingEnabledDelegate(InPropertyEditingDelegate);
-	DetailsView->ForceRefresh();
-}
 
-TSharedRef<SDockTab> FBulletAssetEditor::SpawnPropertiesTab(const FSpawnTabArgs& Args)
-{
-	check(Args.GetTabId() == PropertiesTabId);
 
-	//여기서 탭을 생성
-	return SNew(SDockTab)
-		.Icon(FEditorStyle::GetBrush("GenericEditor.Tabs.Properties"))
-		.Label(LOCTEXT("GenericDetailsTitle", "Details"))
-		.TabColorScale(GetTabColorScale())
-		[
-			DetailsView.ToSharedRef()
-		];
-}
-
-void FBulletAssetEditor::HandleAssetPostImport(UFactory* InFactory, UObject* InObject)
+void FBulletAssetEditor::OnObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap)
 {
-	if (EditingObjects.Contains(InObject))
+	bool bChangedAny = false;
+
+	// Refresh our details view if one of the objects replaced was in the map. This gets called before the reinstance GC fixup, so we might as well fixup EditingObjects now too
+	for (int32 i = 0; i < EditingObjects.Num(); i++)
 	{
-		// The details panel likely needs to be refreshed if an asset was imported again
-		DetailsView->SetObjects(EditingObjects);
+		UObject* SourceObject = EditingObjects[i];
+		UObject* ReplacedObject = ReplacementMap.FindRef(SourceObject);
+
+		if (ReplacedObject && ReplacedObject != SourceObject)
+		{
+			EditingObjects[i] = ReplacedObject;
+			bChangedAny = true;
+		}
 	}
 }
 
-FString FBulletAssetEditor::GetWorldCentricTabPrefix() const
-{
-	return LOCTEXT("WorldCentricTabPrefix", "Generic Asset ").ToString();
-}
 
-TSharedRef<FBulletAssetEditor> FBulletAssetEditor::CreateEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit, FGetDetailsViewObjects GetDetailsViewObjects)
+TSharedRef<FBulletAssetEditor> FBulletAssetEditor::CreateEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit)
 {
 	TSharedRef< FBulletAssetEditor > NewEditor(new FBulletAssetEditor());
-	NewEditor->InitEditor(Mode, InitToolkitHost, ObjectsToEdit, GetDetailsViewObjects);
+	NewEditor->InitEditor(Mode, InitToolkitHost, ObjectsToEdit);
 	return NewEditor;
 }
 
-void FBulletAssetEditor::PostRegenerateMenusAndToolbars()
+void FBulletAssetEditor::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit)
 {
-	// Find the common denominator class of the assets we're editing
-	TArray<UClass*> ClassList;
-	for (UObject* Obj : EditingObjects)
-	{
-		check(Obj);
-		ClassList.Add(Obj->GetClass());
-	}
+	EditingObjects = ObjectsToEdit;
+	GEditor->OnObjectsReplaced().AddSP(this, &FBulletAssetEditor::OnObjectsReplaced);
 
-	UClass* CommonDenominatorClass = UClass::FindCommonBase(ClassList);
-	const bool bNotAllSame = (EditingObjects.Num() > 0) && (EditingObjects[0]->GetClass() != CommonDenominatorClass);
+	//여기다가 만들기 시작하면 될듯.
+	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_BulletAssetEditor_Layout_v2")
+		->AddArea
+		(
+			FTabManager::NewPrimaryArea()->SetOrientation(Orient_Horizontal)
+			->Split
+			(
+				FTabManager::NewStack()
+				->SetSizeCoefficient(0.5f)
+				->SetHideTabWell(true)
+				->AddTab(MovementListTabId, ETabState::OpenedTab)
+			)
+			->Split
+			(
+				FTabManager::NewStack()
+				->SetSizeCoefficient(0.5f)
+				->SetHideTabWell(true)
+				->AddTab(BulletActorTabId, ETabState::OpenedTab)
+			)
+			->Split
+			(
+				FTabManager::NewStack()
+				->SetSizeCoefficient(1.f)
+				->SetHideTabWell(true)
+				->AddTab(ViewportTabId, ETabState::OpenedTab)
+			)
+			->Split
+			(
+				FTabManager::NewStack()
+				->SetSizeCoefficient(0.7f)
+				->SetHideTabWell(true)
+				->AddTab(DetailTabId, ETabState::OpenedTab)
+			)
 
-	// Provide a hyperlink to view that native class
-	if (CommonDenominatorClass)
-	{
-		TWeakObjectPtr<UClass> WeakClassPtr(CommonDenominatorClass);
-		auto OnNavigateToClassCode = [WeakClassPtr]()
-		{
-			if (UClass* StrongClassPtr = WeakClassPtr.Get())
-			{
-				if (FSourceCodeNavigation::CanNavigateToClass(StrongClassPtr))
-				{
-					FSourceCodeNavigation::NavigateToClass(StrongClassPtr);
-				}
-			}
-		};
+		);
 
-		// build and attach the menu overlay
-		TSharedRef<SHorizontalBox> MenuOverlayBox = SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			.VAlign(VAlign_Center)
-			[
-				SNew(STextBlock)
-				.ColorAndOpacity(FSlateColor::UseSubduedForeground())
-			.ShadowOffset(FVector2D::UnitVector)
-			.Text(bNotAllSame ? LOCTEXT("SimpleAssetEditor_AssetType_Varied", "Common Asset Type: ") : LOCTEXT("SimpleAssetEditor_AssetType", "Asset Type: "))
-			]
-		+ SHorizontalBox::Slot()
-			.AutoWidth()
-			.VAlign(VAlign_Center)
-			.Padding(0.0f, 0.0f, 8.0f, 0.0f)
-			[
-				SNew(SHyperlink)
-				.Style(FEditorStyle::Get(), "Common.GotoNativeCodeHyperlink")
-			.OnNavigate_Lambda(OnNavigateToClassCode)
-			.Text(FText::FromName(CommonDenominatorClass->GetFName()))
-			.ToolTipText(FText::Format(LOCTEXT("GoToCode_ToolTip", "Click to open this source file in {0}"), FSourceCodeNavigation::GetSelectedSourceCodeIDE()))
-			];
-
-		SetMenuOverlay(MenuOverlayBox);
-	}
+	const bool bCreateDefaultStandaloneMenu = false;
+	const bool bCreateDefaultToolbar = false;
+	FAssetEditorToolkit::InitAssetEditor(Mode, InitToolkitHost, FBulletAssetEditor::BulletEditorAppIdentifier, StandaloneDefaultLayout, bCreateDefaultStandaloneMenu, bCreateDefaultToolbar, ObjectsToEdit);
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -13,9 +13,6 @@ class SDockableTab;
 class FBulletAssetEditor : public FAssetEditorToolkit
 {
 public:
-	/** Delegate that, given an array of assets, returns an array of objects to use in the details view of an FBulletAssetEditor */
-	DECLARE_DELEGATE_RetVal_OneParam(TArray<UObject*>, FGetDetailsViewObjects, const TArray<UObject*>&);
-
 	virtual void RegisterTabSpawners(const TSharedRef<class FTabManager>& TabManager) override;
 	virtual void UnregisterTabSpawners(const TSharedRef<class FTabManager>& TabManager) override;
 
@@ -26,9 +23,8 @@ public:
 	 * @param	Mode					Asset editing mode for this editor (standalone or world-centric)
 	 * @param	InitToolkitHost			When Mode is WorldCentric, this is the level editor instance to spawn this editor within
 	 * @param	ObjectsToEdit			The object to edit
-	 * @param	GetDetailsViewObjects	If bound, a delegate to get the array of objects to use in the details view; uses ObjectsToEdit if not bound
 	 */
-	void InitEditor(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit, FGetDetailsViewObjects GetDetailsViewObjects);
+	void InitEditor(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit);
 
 	/** Destructor */
 	virtual ~FBulletAssetEditor();
@@ -40,23 +36,17 @@ public:
 	virtual FText GetToolkitToolTipText() const override;
 	virtual FString GetWorldCentricTabPrefix() const override;
 	virtual FLinearColor GetWorldCentricTabColorScale() const override;
-	virtual bool IsPrimaryEditor() const override { return true; }
-	virtual bool IsSimpleAssetEditor() const override { return true; }
-
-	/** FAssetEditorToolkit interface */
-	virtual void PostRegenerateMenusAndToolbars() override;
-
-	/** Used to show or hide certain properties */
-	void SetPropertyVisibilityDelegate(FIsPropertyVisible InVisibilityDelegate);
-	/** Can be used to disable the details view making it read-only */
-	void SetPropertyEditingEnabledDelegate(FIsPropertyEditingEnabled InPropertyEditingDelegate);
 
 private:
 	/** Create the properties tab and its content */
-	TSharedRef<SDockTab> SpawnPropertiesTab(const FSpawnTabArgs& Args);
+	TSharedRef<SDockTab> SpawnMovementListTab(const FSpawnTabArgs& Args);
 
-	/** Handles when an asset is imported */
-	void HandleAssetPostImport(class UFactory* InFactory, UObject* InObject);
+	TSharedRef<SDockTab> SpawnBulletActorTab(const FSpawnTabArgs& Args);
+
+	TSharedRef<SDockTab> SpawnViewportTab(const FSpawnTabArgs& Args);
+
+	TSharedRef<SDockTab> SpawnDetailTab(const FSpawnTabArgs& Args);
+
 
 	/** Called when objects need to be swapped out for new versions, like after a blueprint recompile. */
 	void OnObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap);
@@ -64,22 +54,25 @@ private:
 	/** Dockable tab for properties */
 	TSharedPtr< SDockableTab > PropertiesTab;
 
-	/** Details view */
-	TSharedPtr< class IDetailsView > DetailsView;
-
 	/** App Identifier. Technically, all simple editors are the same app, despite editing a variety of assets. */
-	static const FName SimpleEditorAppIdentifier;
+	static const FName BulletEditorAppIdentifier;
 
 	/**	The tab ids for all the tabs used */
-	static const FName PropertiesTabId;
+	static const FName MovementListTabId;
+
+	static const FName BulletActorTabId;
+
+	static const FName ViewportTabId;
+
+	static const FName DetailTabId;
 
 	/** The objects open within this editor */
 	TArray<UObject*> EditingObjects;
 
 public:
 	/** The name given to all instances of this type of editor */
-	static const FName ToolkitFName;
+	static const FName ToolkitFName; 
 
-	static TSharedRef<FBulletAssetEditor> CreateEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit, FGetDetailsViewObjects GetDetailsViewObjects = FGetDetailsViewObjects());
+	static TSharedRef<FBulletAssetEditor> CreateEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit);
 	
 };
