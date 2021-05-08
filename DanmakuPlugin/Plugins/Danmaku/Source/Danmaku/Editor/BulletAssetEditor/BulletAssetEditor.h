@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Toolkits/IToolkitHost.h"
 #include "Toolkits/AssetEditorToolkit.h"
+#include "Danmaku/Editor/BulletAssetEditor/MovementList/SMovementListWidget.h"
+#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/SBulletGraphEditor.h"
 #include "Editor/PropertyEditor/Public/PropertyEditorDelegates.h"
 
 class IDetailsView;
@@ -37,6 +39,7 @@ public:
 	virtual FString GetWorldCentricTabPrefix() const override;
 	virtual FLinearColor GetWorldCentricTabColorScale() const override;
 
+	static TSharedRef<FBulletAssetEditor> CreateEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit);
 private:
 	/** Create the properties tab and its content */
 	TSharedRef<SDockTab> SpawnMovementListTab(const FSpawnTabArgs& Args);
@@ -51,6 +54,7 @@ private:
 	/** Called when objects need to be swapped out for new versions, like after a blueprint recompile. */
 	void OnObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap);
 
+private:
 	/** Dockable tab for properties */
 	TSharedPtr< SDockableTab > PropertiesTab;
 
@@ -73,6 +77,8 @@ public:
 	/** The name given to all instances of this type of editor */
 	static const FName ToolkitFName; 
 
-	static TSharedRef<FBulletAssetEditor> CreateEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit);
+	TSharedPtr<SMovementListWidget> ListView;
+
+	TSharedPtr<SBulletGraphEditor> GraphEditor;
 	
 };

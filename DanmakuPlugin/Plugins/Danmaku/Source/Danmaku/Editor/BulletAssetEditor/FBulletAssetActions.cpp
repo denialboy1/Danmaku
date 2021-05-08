@@ -3,7 +3,7 @@
 
 #include "FBulletAssetActions.h"
 #include "Danmaku/Bullet/Bullet.h"
-#include "Danmaku/Editor/BulletAssetEditor.h"
+#include "Danmaku/Editor/BulletAssetEditor/BulletAssetEditor.h"
 
 
 FBulletAssetActions::FBulletAssetActions(EAssetTypeCategories::Type InAssetCategory)

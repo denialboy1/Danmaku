@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Danmaku/Editor/BulletAssetEditor.h"
+#include "Danmaku/Editor/BulletAssetEditor/BulletAssetEditor.h"
+
+
 #include "Modules/ModuleManager.h"
 #include "EditorStyleSet.h"
 #include "Widgets/Docking/SDockTab.h"
@@ -10,6 +12,7 @@
 #include "Widgets/Input/SHyperlink.h"
 #include "SourceCodeNavigation.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
+#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/SBulletGraphEditor.h"
 
 #define LOCTEXT_NAMESPACE "BulletEditor"
 
@@ -27,66 +30,45 @@ void FBulletAssetEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>
 	FAssetEditorToolkit::RegisterTabSpawners(InTabManager);
 
 	InTabManager->RegisterTabSpawner(MovementListTabId, FOnSpawnTab::CreateSP(this, &FBulletAssetEditor::SpawnMovementListTab))
-		.SetDisplayName(LOCTEXT("BulletTab", "Bullet"))
-		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
-		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
+		.SetDisplayName(LOCTEXT("MovementListTab", "MovementList"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
 
 	InTabManager->RegisterTabSpawner(BulletActorTabId, FOnSpawnTab::CreateSP(this, &FBulletAssetEditor::SpawnBulletActorTab))
-		.SetDisplayName(LOCTEXT("BulletTab", "Bullet"))
-		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
-		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
+		.SetDisplayName(LOCTEXT("BulletActorTab", "BulletActor"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
 
 	InTabManager->RegisterTabSpawner(ViewportTabId, FOnSpawnTab::CreateSP(this, &FBulletAssetEditor::SpawnViewportTab))
-		.SetDisplayName(LOCTEXT("BulletTab", "Bullet"))
-		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
-		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
+		.SetDisplayName(LOCTEXT("ViewportTab", "Viewport"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
 
 	InTabManager->RegisterTabSpawner(DetailTabId, FOnSpawnTab::CreateSP(this, &FBulletAssetEditor::SpawnDetailTab))
-		.SetDisplayName(LOCTEXT("BulletTab", "Bullet"))
-		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
-		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
+		.SetDisplayName(LOCTEXT("DetailTab", "Detail"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
 }
 
 TSharedRef<SDockTab> FBulletAssetEditor::SpawnMovementListTab(const FSpawnTabArgs& Args)
 {
 	check(Args.GetTabId() == MovementListTabId);
 
+	//데이터 추가
+	TArray<FMovementInfoPtr> MovementList = {
+		FMovementInfo::Make((TEXT("Direction"))),
+		FMovementInfo::Make((TEXT("Rotation"))),
+		FMovementInfo::Make((TEXT("Til"))),
+		FMovementInfo::Make((TEXT("Direction")))
+	};
+
 	return SNew(SDockTab)
 		.Icon(FEditorStyle::GetBrush("BulletEditor.Tabs.Properties"))
 		.Label(LOCTEXT("BulletDetailsTitle", "Details"))
 		.TabColorScale(GetTabColorScale())
 		[
-			SNew(SUniformGridPanel)
-			+ SUniformGridPanel::Slot(0, 0)
-		.HAlign(HAlign_Fill)
-		.VAlign(VAlign_Fill)
-		[
-			SNew(STextBlock)
-			.Text(FText::FromString("InnerTab2"))
-		]
-	+ SUniformGridPanel::Slot(1, 0)
-		.HAlign(HAlign_Fill)
-		.VAlign(VAlign_Fill)
-		[
-			SNew(STextBlock)
-			.Text(FText::FromString("InnerTab2"))
-		]
-	+ SUniformGridPanel::Slot(0, 1)
-		.HAlign(HAlign_Fill)
-		.VAlign(VAlign_Fill)
-		[
-			SNew(STextBlock)
-			.Text(FText::FromString("InnerTab2"))
-		]
-	+ SUniformGridPanel::Slot(1, 1)
-		.HAlign(HAlign_Fill)
-		.VAlign(VAlign_Fill)
-		[
-			SNew(STextBlock)
-			.Text(FText::FromString("InnerTab2"))
-		]
+			SAssignNew(ListView, SMovementListWidget)
+			.DataList(MovementList)
 		];
 }
+
+
 
 TSharedRef<SDockTab> FBulletAssetEditor::SpawnBulletActorTab(const FSpawnTabArgs& Args)
 {
@@ -94,8 +76,17 @@ TSharedRef<SDockTab> FBulletAssetEditor::SpawnBulletActorTab(const FSpawnTabArgs
 
 	return SNew(SDockTab)
 		[
-			SNew(STextBlock)
-			.Text(FText::FromString("BulletActor"))
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			[
+				SNew(STextBlock)
+				.Text(FText::FromString("ActorName"))
+			]
+			+ SVerticalBox::Slot()
+			[
+				SNew(SBulletGraphEditor)
+			]
+			
 		];
 }
 
@@ -296,44 +287,54 @@ void FBulletAssetEditor::InitEditor(const EToolkitMode::Type Mode, const TShared
 	EditingObjects = ObjectsToEdit;
 	GEditor->OnObjectsReplaced().AddSP(this, &FBulletAssetEditor::OnObjectsReplaced);
 
-	//여기다가 만들기 시작하면 될듯.
-	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_BulletAssetEditor_Layout_v2")
+	//레이아웃 설정
+	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_BulletAssetEditor_Layout_v4")
 		->AddArea
 		(
-			FTabManager::NewPrimaryArea()->SetOrientation(Orient_Horizontal)
+			FTabManager::NewPrimaryArea()->SetOrientation(Orient_Vertical)
 			->Split
 			(
 				FTabManager::NewStack()
-				->SetSizeCoefficient(0.5f)
+				->SetSizeCoefficient(0.1f)
+				->AddTab(GetToolbarTabId(), ETabState::OpenedTab)
 				->SetHideTabWell(true)
-				->AddTab(MovementListTabId, ETabState::OpenedTab)
 			)
 			->Split
 			(
-				FTabManager::NewStack()
-				->SetSizeCoefficient(0.5f)
-				->SetHideTabWell(true)
-				->AddTab(BulletActorTabId, ETabState::OpenedTab)
+				FTabManager::NewSplitter()->SetOrientation(Orient_Horizontal)
+				->Split
+				(
+					FTabManager::NewStack()
+					->SetSizeCoefficient(0.5f)
+					->SetHideTabWell(true)
+					->AddTab(MovementListTabId, ETabState::OpenedTab)
+				)
+				->Split
+				(
+					FTabManager::NewStack()
+					->SetSizeCoefficient(0.5f)
+					->SetHideTabWell(true)
+					->AddTab(BulletActorTabId, ETabState::OpenedTab)
+				)
+				->Split
+				(
+					FTabManager::NewStack()
+					->SetSizeCoefficient(1.f)
+					->SetHideTabWell(true)
+					->AddTab(ViewportTabId, ETabState::OpenedTab)
+				)
+				->Split
+				(
+					FTabManager::NewStack()
+					->SetSizeCoefficient(0.7f)
+					->SetHideTabWell(true)
+					->AddTab(DetailTabId, ETabState::OpenedTab)
+				)
 			)
-			->Split
-			(
-				FTabManager::NewStack()
-				->SetSizeCoefficient(1.f)
-				->SetHideTabWell(true)
-				->AddTab(ViewportTabId, ETabState::OpenedTab)
-			)
-			->Split
-			(
-				FTabManager::NewStack()
-				->SetSizeCoefficient(0.7f)
-				->SetHideTabWell(true)
-				->AddTab(DetailTabId, ETabState::OpenedTab)
-			)
-
 		);
 
-	const bool bCreateDefaultStandaloneMenu = false;
-	const bool bCreateDefaultToolbar = false;
+	const bool bCreateDefaultStandaloneMenu = true;
+	const bool bCreateDefaultToolbar = true;
 	FAssetEditorToolkit::InitAssetEditor(Mode, InitToolkitHost, FBulletAssetEditor::BulletEditorAppIdentifier, StandaloneDefaultLayout, bCreateDefaultStandaloneMenu, bCreateDefaultToolbar, ObjectsToEdit);
 }
 

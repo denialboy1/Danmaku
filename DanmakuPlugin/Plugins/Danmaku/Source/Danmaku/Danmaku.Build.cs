@@ -43,6 +43,7 @@ public class Danmaku : ModuleRules
 				"Slate",
 				"SlateCore",
 				"AssetTools",
+				"GraphEditor"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

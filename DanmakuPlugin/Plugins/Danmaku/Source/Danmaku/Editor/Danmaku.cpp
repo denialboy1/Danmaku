@@ -4,8 +4,10 @@
 
 #include "Danmaku/Editor/DanmakuDetails.h"
 #include "Danmaku/Editor/SDanmakuEditorViewport.h"
-#include "Danmaku/Editor/FBulletAssetActions.h"
+#include "Danmaku/Editor/BulletAssetEditor/FBulletAssetActions.h"
+#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/BulletEdGraphNode.h"
 #include "Danmaku/Bullet/Bullet.h"
+
 
 #include "DanmakuStyle.h"
 #include "DanmakuCommands.h"
@@ -15,9 +17,11 @@
 #include "ToolMenus.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
 #include "AssetToolsModule.h"
+#include "EdGraphUtilities.h"
+
+
 
 //#include "Danmaku/Editor/BulletAsset.h"
-#include "Danmaku/Editor/FBulletDetails.h"
 #include "PropertyEditorDelegates.h"
 
 
@@ -62,12 +66,13 @@ void FDanmakuModule::StartupModule()
 
 
 	// register custom layouts
-	{
-		static FName PropertyEditor("PropertyEditor");
-		FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>(PropertyEditor);
-		PropertyModule.RegisterCustomClassLayout(ABullet::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FBulletDetails::MakeInstance));
-	}
+	//{
+	//	static FName PropertyEditor("PropertyEditor");
+	//	FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>(PropertyEditor);
+	//	PropertyModule.RegisterCustomClassLayout(ABullet::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FBulletDetails::MakeInstance));
+	//}
 
+	FEdGraphUtilities::RegisterVisualNodeFactory(MakeShareable(new FBulletGraphNodeFactory()));
 }
 
 void FDanmakuModule::ShutdownModule()
