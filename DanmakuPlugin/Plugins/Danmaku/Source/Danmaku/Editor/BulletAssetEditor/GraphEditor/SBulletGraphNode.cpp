@@ -3,6 +3,7 @@
 
 #include "SBulletGraphNode.h"
 #include "Danmaku/Editor/BulletAssetEditor/GraphEditor/BulletEdGraphNode.h"
+
 #include "Widgets/Input/SButton.h"
 #include "SNodePanel.h"
 
@@ -12,10 +13,15 @@ void SBulletGraphNode::Construct(const FArguments& InArgs, class UBulletEdGraphN
 	UpdateGraphNode();
 }
 
-void SBulletGraphNode::UpdateGraphNode()
+TSharedRef<SWidget> SBulletGraphNode::CreateNodeContentArea()
 {
-	GetOrAddSlot(ENodeZone::Center)
-	[
-		SNew(SButton).Text(FText::FromString("Hello"))
-	];
+	return SAssignNew(BulletStackEntry,SBulletStackEntry);
 }
+
+//void SBulletGraphNode::UpdateGraphNode()
+//{
+//	GetOrAddSlot(ENodeZone::Center)
+//	[
+//		SNew(SButton).Text(FText::FromString("Hello"))
+//	];
+//}

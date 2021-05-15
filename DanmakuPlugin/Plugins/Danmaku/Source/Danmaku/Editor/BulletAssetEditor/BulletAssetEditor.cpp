@@ -78,6 +78,7 @@ TSharedRef<SDockTab> FBulletAssetEditor::SpawnBulletActorTab(const FSpawnTabArgs
 		[
 			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
+		     .FillHeight(0.1f)
 			[
 				SNew(STextBlock)
 				.Text(FText::FromString("ActorName"))

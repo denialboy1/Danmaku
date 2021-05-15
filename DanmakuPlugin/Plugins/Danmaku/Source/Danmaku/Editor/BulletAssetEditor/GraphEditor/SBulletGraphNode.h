@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SGraphNode.h"
+#include "SBulletStackEntry.h"
 
 class DANMAKU_API SBulletGraphNode : public SGraphNode
 {
@@ -13,5 +14,11 @@ public:
 
 	void Construct(const FArguments& InArgs, class UBulletEdGraphNode* InNode);
 
-	virtual void UpdateGraphNode() override;
+	//virtual void UpdateGraphNode() override;
+
+	/** Create the inner node content area, including the left/right pin boxes */
+	virtual TSharedRef<SWidget> CreateNodeContentArea() override;
+
+private:
+	TSharedPtr<SBulletStackEntry> BulletStackEntry;
 };

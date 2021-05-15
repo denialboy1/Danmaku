@@ -21,8 +21,6 @@ void SMovementListWidget::Construct(const FArguments& Args)
 
 TSharedRef<SWidget> SMovementListWidget::CreateListView()
 {
-	
-	
 	return SAssignNew(this->ListView, SMovemnetListView)
 		.OnGenerateRow(this, &SMovementListWidget::GenerateListRow)
 		.ListItemsSource(&this->MovementList)
@@ -34,8 +32,6 @@ TSharedRef<SWidget> SMovementListWidget::CreateListView()
 			.DefaultLabel(LOCTEXT("MovementLabel", "Movement"))
 			.FillWidth(1.0f)
 		);
-
-	
 }
 
 TSharedRef<ITableRow> SMovementListWidget::GenerateListRow(FMovementInfoPtr InInfo, const TSharedRef<STableViewBase>& OwnerTable)

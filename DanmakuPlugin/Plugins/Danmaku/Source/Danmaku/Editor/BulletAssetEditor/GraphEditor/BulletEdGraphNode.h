@@ -29,6 +29,4 @@ UCLASS()
 class DANMAKU_API UBulletEdGraphNode : public UEdGraphNode
 {
 	GENERATED_BODY()
-public:
-	void RebuildGraph();
 };
