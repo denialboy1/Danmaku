@@ -10,7 +10,7 @@ void UBulletEdGraph::RebuildGraph()
 	CreateNode(UBulletEdGraphNode::StaticClass());
 }
 
-UBulletEdGraphNode* UBulletEdGraph::CreateMovementNode()
+UBulletEdGraphNode* UBulletEdGraph::CreateBulletAttributeNode()
 {
 	FGraphNodeCreator<UBulletEdGraphNode> NodeCreator(*this);
 	UBulletEdGraphNode* Result = NodeCreator.CreateNode();

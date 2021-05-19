@@ -72,7 +72,13 @@ void FDanmakuModule::StartupModule()
 	//	PropertyModule.RegisterCustomClassLayout(ABullet::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FBulletDetails::MakeInstance));
 	//}
 
-	FEdGraphUtilities::RegisterVisualNodeFactory(MakeShareable(new FBulletGraphNodeFactory()));
+	//EdGraph를 정상적으로 호출하기 위해 등록
+	BulletGraphNodeFactory = MakeShareable(new FBulletGraphNodeFactory());
+	if (BulletGraphNodeFactory)
+	{
+		FEdGraphUtilities::RegisterVisualNodeFactory(BulletGraphNodeFactory);
+	}
+	
 }
 
 void FDanmakuModule::ShutdownModule()
@@ -92,7 +98,7 @@ void FDanmakuModule::ShutdownModule()
 
 	FCoreDelegates::OnPostEngineInit.RemoveAll(this);
 
-
+	
 
 	// Unregister all the asset types that we registered
 	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
@@ -111,6 +117,12 @@ void FDanmakuModule::ShutdownModule()
 	{
 		FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
 		PropertyModule.UnregisterCustomClassLayout(ABullet::StaticClass()->GetFName());
+	}
+
+	//unregister EdGraphNode
+	if (BulletGraphNodeFactory)
+	{
+		FEdGraphUtilities::UnregisterVisualNodeFactory(BulletGraphNodeFactory);
 	}
 }
 

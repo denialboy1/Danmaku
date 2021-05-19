@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Toolkits/IToolkitHost.h"
 #include "Toolkits/AssetEditorToolkit.h"
-#include "Danmaku/Editor/BulletAssetEditor/MovementList/SMovementListWidget.h"
+#include "Danmaku/Editor/BulletAssetEditor/BulletAttributeList/SBulletAttributeListWidget.h"
 #include "Danmaku/Editor/BulletAssetEditor/GraphEditor/SBulletGraphEditor.h"
 #include "Editor/PropertyEditor/Public/PropertyEditorDelegates.h"
 
@@ -77,7 +77,7 @@ public:
 	/** The name given to all instances of this type of editor */
 	static const FName ToolkitFName; 
 
-	TSharedPtr<SMovementListWidget> ListView;
+	TSharedPtr<SBulletAttributeListWidget> ListView;
 
 	TSharedPtr<SBulletGraphEditor> GraphEditor;
 	

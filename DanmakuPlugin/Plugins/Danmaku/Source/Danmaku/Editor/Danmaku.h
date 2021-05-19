@@ -30,4 +30,6 @@ private:
 	TSharedPtr<class FUICommandList> PluginCommands;
 
 	TArray<TSharedPtr<IAssetTypeActions>> CreatedAssetTypeActions;
+
+	TSharedPtr<class FBulletGraphNodeFactory> BulletGraphNodeFactory;
 };

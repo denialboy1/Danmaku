@@ -3,3 +3,7 @@
 
 #include "BulletEdGraphNode.h"
 
+void UBulletEdGraphNode::AddBulletAttribute(FText AttributeName)
+{
+	BulletAttributeList.Add(AttributeName);
+}

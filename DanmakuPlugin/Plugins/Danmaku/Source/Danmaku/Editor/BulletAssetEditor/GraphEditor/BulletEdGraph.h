@@ -4,12 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "EdGraph/EdGraph.h"
-
+#include "BulletStackEntry.h"
 #include "BulletEdGraph.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class DANMAKU_API UBulletEdGraph : public UEdGraph
 {
@@ -18,5 +15,5 @@ class DANMAKU_API UBulletEdGraph : public UEdGraph
 public:
 	void RebuildGraph();
 
-	class UBulletEdGraphNode* CreateMovementNode();
+	class UBulletEdGraphNode* CreateBulletAttributeNode();
 };
