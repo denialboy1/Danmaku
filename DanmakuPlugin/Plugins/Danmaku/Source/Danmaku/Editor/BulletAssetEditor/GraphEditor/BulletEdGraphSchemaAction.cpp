@@ -11,7 +11,7 @@ UEdGraphNode* FBulletEdGraphSchemaAction::PerformAction(class UEdGraph* ParentGr
 {
 	UBulletEdGraph* Graph = Cast<UBulletEdGraph>(ParentGraph);
 
-	UBulletEdGraphNode* GraphNode = Graph->CreateMovementNode();
+	UBulletEdGraphNode* GraphNode = Graph->CreateBulletAttributeNode();
 	GraphNode->NodePosX = Location.X;
 	GraphNode->NodePosY = Location.Y;
 	return nullptr;

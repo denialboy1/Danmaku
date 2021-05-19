@@ -51,11 +51,11 @@ TSharedRef<SDockTab> FBulletAssetEditor::SpawnMovementListTab(const FSpawnTabArg
 	check(Args.GetTabId() == MovementListTabId);
 
 	//데이터 추가
-	TArray<FMovementInfoPtr> MovementList = {
-		FMovementInfo::Make((TEXT("Direction"))),
-		FMovementInfo::Make((TEXT("Rotation"))),
-		FMovementInfo::Make((TEXT("Til"))),
-		FMovementInfo::Make((TEXT("Direction")))
+	TArray<FBulletAttributeInfoPtr> BulletAttributeList = {
+		FBulletAttributeInfo::Make((TEXT("Direction"))),
+		FBulletAttributeInfo::Make((TEXT("Rotation"))),
+		FBulletAttributeInfo::Make((TEXT("Til"))),
+		FBulletAttributeInfo::Make((TEXT("Direction")))
 	};
 
 	return SNew(SDockTab)
@@ -63,8 +63,8 @@ TSharedRef<SDockTab> FBulletAssetEditor::SpawnMovementListTab(const FSpawnTabArg
 		.Label(LOCTEXT("BulletDetailsTitle", "Details"))
 		.TabColorScale(GetTabColorScale())
 		[
-			SAssignNew(ListView, SMovementListWidget)
-			.DataList(MovementList)
+			SAssignNew(ListView, SBulletAttributeListWidget)
+			.DataList(BulletAttributeList)
 		];
 }
 

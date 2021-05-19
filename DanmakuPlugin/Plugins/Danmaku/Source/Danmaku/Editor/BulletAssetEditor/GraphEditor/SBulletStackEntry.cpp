@@ -5,27 +5,30 @@
 
 void SBulletStackEntry::Construct(const FArguments& Args)
 {
+	BulletStackEntryList = Args._BulletAttributeList;
 	this->ChildSlot
 		[
 			CreateListView()
 		];
 
 	this->ListView->RequestListRefresh();
-
-	FBulletStackEntryPtr Attribute1 = FBulletStackEntry::Make();
-	Attribute1->BulletAttribute = TEXT("Direction");
-	FBulletStackEntryPtr Attribute2 = FBulletStackEntry::Make();;
-	Attribute2->BulletAttribute = TEXT("Rotation");
-
-	BulletAttributeList.Add(Attribute1);
-	BulletAttributeList.Add(Attribute2);
 }
+
+void SBulletStackEntry::AddBulletAttribute(FText AttributeName)
+{
+	FBulletStackEntryPtr BulletAttribute = FBulletStackEntry::Make();
+	BulletAttribute->BulletAttribute = AttributeName.ToString();
+	BulletStackEntryList.Add(BulletAttribute);
+
+	this->ListView->RequestListRefresh();
+}
+
 
 TSharedRef<SWidget> SBulletStackEntry::CreateListView()
 {
 	return SAssignNew(this->ListView, SBulletStackEntryListView)
 		.OnGenerateRow(this, &SBulletStackEntry::GenerateListRow)
-		.ListItemsSource(&this->BulletAttributeList)
+		.ListItemsSource(&this->BulletStackEntryList)
 		.ItemHeight(24)
 		.Visibility(EVisibility::Visible);
 }
@@ -38,3 +41,4 @@ TSharedRef<ITableRow> SBulletStackEntry::GenerateListRow(FBulletStackEntryPtr Bu
 			.Text(FText::FromString(BulletStackEntry->BulletAttribute))
 		];
 }
+

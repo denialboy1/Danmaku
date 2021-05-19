@@ -19,21 +19,22 @@ class DANMAKU_API SBulletStackEntry : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SBulletStackEntry) {}
+	SLATE_ARGUMENT(TArray<FBulletStackEntryPtr>, BulletAttributeList)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& Args);
-
+	void AddBulletAttribute(FText AttributeName);
 private:
 	//ListView를 생성하는 함수
 	TSharedRef<SWidget> CreateListView();
 
 	//ListView에서 한줄씩 추가될떄마다 호출되는 함수 : 바인딩으로 사용할 예정
 	TSharedRef<ITableRow> GenerateListRow(FBulletStackEntryPtr BulletStackEntry, const TSharedRef<STableViewBase>& OwnerTable);
-
 private:
 	//SAssignNew때 보관할 리스트 변수
 	TSharedPtr<SBulletStackEntryListView> ListView;
 
 	// ListView에 전달될 데이터 목록
-	TArray<FBulletStackEntryPtr> BulletAttributeList;
+	TArray<FBulletStackEntryPtr> BulletStackEntryList;
+
 };

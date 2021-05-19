@@ -14,11 +14,12 @@ public:
 
 	void Construct(const FArguments& InArgs, class UBulletEdGraphNode* InNode);
 
-	//virtual void UpdateGraphNode() override;
+	virtual FReply OnDrop(const FGeometry& MyGeometry, const FDragDropEvent& DragDropEvent) override;
 
 	/** Create the inner node content area, including the left/right pin boxes */
 	virtual TSharedRef<SWidget> CreateNodeContentArea() override;
 
+	void AddBulletAttribute(FText AttributeName);
 private:
 	TSharedPtr<SBulletStackEntry> BulletStackEntry;
 };
