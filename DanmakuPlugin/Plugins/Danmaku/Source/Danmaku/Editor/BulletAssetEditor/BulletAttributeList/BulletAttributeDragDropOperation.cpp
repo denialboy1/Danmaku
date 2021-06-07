@@ -2,7 +2,7 @@
 
 
 #include "BulletAttributeDragDropOperation.h"
-#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/SBulletGraphEditor.h"
+#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/SBulletGraphTab.h"
 
 void FBulletAttributeDragDropOperation::OnDragged(const class FDragDropEvent& DragDropEvent)
 {

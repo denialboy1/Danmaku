@@ -6,7 +6,7 @@
 #include "Toolkits/IToolkitHost.h"
 #include "Toolkits/AssetEditorToolkit.h"
 #include "Danmaku/Editor/BulletAssetEditor/BulletAttributeList/SBulletAttributeListWidget.h"
-#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/SBulletGraphEditor.h"
+#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/SBulletGraphTab.h"
 #include "Editor/PropertyEditor/Public/PropertyEditorDelegates.h"
 
 class IDetailsView;
@@ -79,6 +79,6 @@ public:
 
 	TSharedPtr<SBulletAttributeListWidget> ListView;
 
-	TSharedPtr<SBulletGraphEditor> GraphEditor;
+	TSharedPtr<SBulletGraphTab> GraphEditor;
 	
 };

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/SBulletGraphEditor.h"
+#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/SBulletGraphTab.h"
 
 #include "Widgets/SWidget.h"
 #include "Widgets/SCompoundWidget.h"
