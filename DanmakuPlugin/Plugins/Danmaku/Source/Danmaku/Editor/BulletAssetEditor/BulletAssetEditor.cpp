@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Danmaku/Editor/BulletAssetEditor/BulletAssetEditor.h"
-
+#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/SBulletGraphTab.h"
+#include "Danmaku/Editor/BulletAssetEditor/ViewportEditor/SBulletViewportTab.h"
 
 #include "Modules/ModuleManager.h"
 #include "EditorStyleSet.h"
@@ -12,7 +13,7 @@
 #include "Widgets/Input/SHyperlink.h"
 #include "SourceCodeNavigation.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
-#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/SBulletGraphEditor.h"
+
 
 #define LOCTEXT_NAMESPACE "BulletEditor"
 
@@ -85,7 +86,7 @@ TSharedRef<SDockTab> FBulletAssetEditor::SpawnBulletActorTab(const FSpawnTabArgs
 			]
 			+ SVerticalBox::Slot()
 			[
-				SNew(SBulletGraphEditor)
+				SNew(SBulletGraphTab)
 			]
 			
 		];
@@ -97,8 +98,7 @@ TSharedRef<SDockTab> FBulletAssetEditor::SpawnViewportTab(const FSpawnTabArgs& A
 
 	return SNew(SDockTab)
 		[
-			SNew(STextBlock)
-			.Text(FText::FromString("Viewport"))
+			SNew(SBulletViewportTab)
 		];
 }
 

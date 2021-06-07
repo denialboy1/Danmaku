@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SBulletGraphEditor.h"
+#include "SBulletGraphTab.h"
 #include "Danmaku/Editor/BulletAssetEditor/GraphEditor/BulletEdGraph.h"
 #include "Danmaku/Editor/BulletAssetEditor/GraphEditor/BulletEdGraphSchema.h"
 
-void SBulletGraphEditor::Construct(const FArguments& Args)
+void SBulletGraphTab::Construct(const FArguments& Args)
 {
 	//Graph »ý¼º
 	GraphObj = NewObject<UBulletEdGraph>();

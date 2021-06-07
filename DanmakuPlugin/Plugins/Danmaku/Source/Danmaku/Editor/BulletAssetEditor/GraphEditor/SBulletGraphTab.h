@@ -8,10 +8,10 @@
 /**
  * 
  */
-class SBulletGraphEditor : public SCompoundWidget
+class SBulletGraphTab : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SBulletGraphEditor) {}
+	SLATE_BEGIN_ARGS(SBulletGraphTab) {}
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
