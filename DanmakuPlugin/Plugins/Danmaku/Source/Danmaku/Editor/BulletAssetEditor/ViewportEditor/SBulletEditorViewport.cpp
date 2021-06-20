@@ -9,11 +9,44 @@ void SBulletEditorViewport::Construct(const FArguments& InArgs)
 	SEditorViewport::Construct(SEditorViewport::FArguments());
 }
 
+void SBulletEditorViewport::PlaySimulation()
+{
+	if (EditorViewportClient)
+	{
+		EditorViewportClient->Play();
+	}
+	
+}
+
+void SBulletEditorViewport::StopSimulation()
+{
+	if (EditorViewportClient)
+	{
+		EditorViewportClient->Stop();
+	}
+	
+}
+
+void SBulletEditorViewport::PauseSimulation()
+{
+	if (EditorViewportClient)
+	{
+		EditorViewportClient->Pause();
+	}
+}
+
 TSharedRef<FEditorViewportClient> SBulletEditorViewport::MakeEditorViewportClient()
 {
 	PreviewScene = MakeShareable(new FPreviewScene);
 
-	TSharedPtr<FBulletEditorViewport> EditorViewportClient = MakeShareable(new FBulletEditorViewport(PreviewScene.Get()));
+	if (PreviewScene)
+	{
+		EditorViewportClient = MakeShareable(new FBulletEditorViewport(PreviewScene.Get()));
+		if (EditorViewportClient)
+		{
+			EditorViewportClient->SetRealtime(true);
+		}
+	}
 
 	return EditorViewportClient.ToSharedRef();
 }

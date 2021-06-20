@@ -2,16 +2,8 @@
 
 
 #include "SBulletViewportTab.h"
-#include "SBulletEditorViewport.h"
 #include "Danmaku/Editor/DanmakuStyle.h"
-
-
-#include "Widgets/SBoxPanel.h"
 #include "Widgets/Input/SButton.h"
-#include "Widgets/Text/STextBlock.h"
-#include "Widgets/Layout/SSpacer.h"
-
-
 
 void SBulletViewportTab::Construct(const FArguments& Args)
 {
@@ -30,12 +22,14 @@ void SBulletViewportTab::Construct(const FArguments& Args)
 	PauseButtonStyle->SetHovered(*(FDanmakuStyle::PauseButtonHorveredInstance->GetBrush(TEXT("BulletAssetEditor.PauseButton.Horvered"))));
 	PauseButtonStyle->SetPressed(*(FDanmakuStyle::PauseButtonPressedInstance->GetBrush(TEXT("BulletAssetEditor.PauseButton.Pressed"))));
 
+	
+
 	this->ChildSlot
 		[
 			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
-            .FillHeight(0.03f)
-			.HAlign(EHorizontalAlignment::HAlign_Center)
+		.FillHeight(0.03f)
+		.HAlign(EHorizontalAlignment::HAlign_Center)
 		[
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
@@ -45,6 +39,8 @@ void SBulletViewportTab::Construct(const FArguments& Args)
 			[
 				SNew(SButton)
 				.ButtonStyle(PlayButtonStyle.Get())
+				.OnClicked(this, &SBulletViewportTab::OnPlayButtonClicked)
+
 			]
 		]
 	+ SHorizontalBox::Slot()
@@ -53,20 +49,55 @@ void SBulletViewportTab::Construct(const FArguments& Args)
 		[
 			SNew(SButton)
 			.ButtonStyle(StopButtonStyle.Get())
+			.OnClicked(this, &SBulletViewportTab::OnStopButtonClicked)
 		]
 		]
 	+ SHorizontalBox::Slot()
 		[
 			SNew(SBorder)
-		[
-			SNew(SButton)
-			.ButtonStyle(PauseButtonStyle.Get())
-		]
+			[
+				SNew(SButton)
+				.ButtonStyle(PauseButtonStyle.Get())
+				.OnClicked(this, &SBulletViewportTab::OnPauseButtonClicked)
+			]
 		]
 		]
 	+ SVerticalBox::Slot()
 		[
-			SNew(SBulletEditorViewport)
+			SAssignNew(BulletEditorViewportPtr, SBulletEditorViewport)
 		]
 	];
+}
+
+FReply SBulletViewportTab::OnPlayButtonClicked()
+{
+	if (BulletEditorViewportPtr)
+	{
+		BulletEditorViewportPtr->PlaySimulation();
+		return FReply::Handled();
+	}
+	
+	return FReply::Unhandled();
+}
+
+FReply SBulletViewportTab::OnStopButtonClicked()
+{
+	if (BulletEditorViewportPtr)
+	{
+		BulletEditorViewportPtr->StopSimulation();
+		return FReply::Handled();
+	}
+	
+	return FReply::Unhandled();
+}
+
+FReply SBulletViewportTab::OnPauseButtonClicked()
+{
+	if (BulletEditorViewportPtr)
+	{
+		BulletEditorViewportPtr->PauseSimulation();
+		return FReply::Handled();
+	}
+
+	return FReply::Unhandled();
 }

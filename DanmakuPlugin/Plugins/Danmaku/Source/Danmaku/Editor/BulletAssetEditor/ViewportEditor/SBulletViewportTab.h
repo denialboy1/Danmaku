@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SBulletEditorViewport.h"
 #include "Widgets/SCompoundWidget.h"
 /**
  * 
@@ -14,4 +15,13 @@ public:
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& Args);
+
+private:
+	FReply OnPlayButtonClicked();
+	FReply OnStopButtonClicked();
+	FReply OnPauseButtonClicked();
+
+private:
+	TSharedPtr<SBulletEditorViewport> BulletEditorViewportPtr;
+
 };
