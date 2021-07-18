@@ -50,3 +50,15 @@ TSharedRef<FEditorViewportClient> SBulletEditorViewport::MakeEditorViewportClien
 
 	return EditorViewportClient.ToSharedRef();
 }
+
+void SBulletEditorViewport::OnFocusViewportToSelection()
+{
+	UE_LOG(LogTemp, Log, TEXT("Selected"));
+}
+
+FReply SBulletEditorViewport::OnFocusReceived(const FGeometry& MyGeometry, const FFocusEvent& InFocusEvent)
+{
+	
+	return SEditorViewport::OnFocusReceived(MyGeometry, InFocusEvent);
+}
+

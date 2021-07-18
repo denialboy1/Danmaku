@@ -6,6 +6,8 @@
 #include "Danmaku/Editor/SDanmakuEditorViewport.h"
 #include "Danmaku/Editor/BulletAssetEditor/FBulletAssetActions.h"
 #include "Danmaku/Editor/BulletAssetEditor/GraphEditor/BulletEdGraphNode.h"
+#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/BulletGraphEditorDetailCustomization.h"
+#include "Danmaku/Editor/BulletAssetEditor/ViewportEditor/BulletViewportEditorDetailCustomization.h"
 
 #include "Danmaku/Bullet/Bullet.h"
 
@@ -24,9 +26,13 @@
 
 //#include "Danmaku/Editor/BulletAsset.h"
 #include "PropertyEditorDelegates.h"
+#include "PropertyEditorModule.h"
 
 
 static const FName DanmakuTabName("Danmaku");
+static const FName BulletEdGraphNodeCustomizationName("BulletEdGraphNode");
+static const FName BulletActorCustomizationName("BulletActor");
+
 
 #define LOCTEXT_NAMESPACE "FDanmakuModule"
 
@@ -66,12 +72,14 @@ void FDanmakuModule::StartupModule()
 	}
 
 
-	// register custom layouts
-	//{
-	//	static FName PropertyEditor("PropertyEditor");
-	//	FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>(PropertyEditor);
-	//	PropertyModule.RegisterCustomClassLayout(ABullet::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FBulletDetails::MakeInstance));
-	//}
+	//자신이 커스텀한 디테일 패널 등록 
+	FPropertyEditorModule& PropertyModule =	FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+	//PropertyModule.RegisterCustomClassLayout("Bullet", FOnGetDetailCustomizationInstance::CreateStatic(&MyCustomization::MakeInsance));
+	PropertyModule.RegisterCustomClassLayout(BulletEdGraphNodeCustomizationName, FOnGetDetailCustomizationInstance::CreateStatic(&BulletGraphEditorDetailCustomization::MakeInstance));
+	PropertyModule.RegisterCustomClassLayout(BulletActorCustomizationName, FOnGetDetailCustomizationInstance::CreateStatic(&BulletViewportEditorDetailCustomization::MakeInstance));
+	//PropertyModule.RegisterCustomClassLayout("DanmakuActor", FOnGetDetailCustomizationInstance::CreateStatic(&MyCustomization::MakeInsance));
+
+	PropertyModule.NotifyCustomizationModuleChanged();
 
 	//EdGraph를 정상적으로 호출하기 위해 등록
 	BulletGraphNodeFactory = MakeShareable(new FBulletGraphNodeFactory());
@@ -80,6 +88,7 @@ void FDanmakuModule::StartupModule()
 		FEdGraphUtilities::RegisterVisualNodeFactory(BulletGraphNodeFactory);
 	}
 	
+
 }
 
 void FDanmakuModule::ShutdownModule()
@@ -117,7 +126,8 @@ void FDanmakuModule::ShutdownModule()
 	if (FModuleManager::Get().IsModuleLoaded("PropertyEditor"))
 	{
 		FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-		PropertyModule.UnregisterCustomClassLayout(ABullet::StaticClass()->GetFName());
+		PropertyModule.UnregisterCustomClassLayout(BulletEdGraphNodeCustomizationName);
+		PropertyModule.UnregisterCustomClassLayout(BulletActorCustomizationName);
 	}
 
 	//unregister EdGraphNode
@@ -125,6 +135,8 @@ void FDanmakuModule::ShutdownModule()
 	{
 		FEdGraphUtilities::UnregisterVisualNodeFactory(BulletGraphNodeFactory);
 	}
+
+
 }
 
 TSharedRef<SDockTab> FDanmakuModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)

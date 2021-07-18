@@ -40,6 +40,8 @@ public:
 	virtual FLinearColor GetWorldCentricTabColorScale() const override;
 
 	static TSharedRef<FBulletAssetEditor> CreateEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit);
+
+	TSharedPtr<IDetailsView> GetDetailView() { return DetailView; }
 private:
 	/** Create the properties tab and its content */
 	TSharedRef<SDockTab> SpawnMovementListTab(const FSpawnTabArgs& Args);
@@ -53,6 +55,8 @@ private:
 
 	/** Called when objects need to be swapped out for new versions, like after a blueprint recompile. */
 	void OnObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap);
+
+	
 
 private:
 	/** Dockable tab for properties */
@@ -73,12 +77,16 @@ private:
 	/** The objects open within this editor */
 	TArray<UObject*> EditingObjects;
 
+	TSharedPtr<IDetailsView> DetailView;
 public:
 	/** The name given to all instances of this type of editor */
 	static const FName ToolkitFName; 
 
+	static TSharedPtr<FBulletAssetEditor> BulletAssetEditor;
+
 	TSharedPtr<SBulletAttributeListWidget> ListView;
 
-	TSharedPtr<SBulletGraphTab> GraphEditor;
+	TSharedPtr<SBulletGraphTab> BulletGraphTab;
+
 	
 };

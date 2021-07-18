@@ -35,5 +35,7 @@ public:
 	TArray<FText> GetBulletAttributeList() const { return BulletAttributeList; }
 private:
 	//여기에 리스트 정보가 들어가야함
+	UPROPERTY(EditAnywhere, Category = "BulletAttributeList")
 	TArray<FText> BulletAttributeList;
+
 };

@@ -2,6 +2,8 @@
 
 #include "Danmaku/Editor/BulletAssetEditor/BulletAssetEditor.h"
 #include "Danmaku/Editor/BulletAssetEditor/GraphEditor/SBulletGraphTab.h"
+#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/BulletEdGraph.h"
+#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/BulletEdGraphNode.h"
 #include "Danmaku/Editor/BulletAssetEditor/ViewportEditor/SBulletViewportTab.h"
 
 #include "Modules/ModuleManager.h"
@@ -18,6 +20,9 @@
 #define LOCTEXT_NAMESPACE "BulletEditor"
 
 const FName FBulletAssetEditor::ToolkitFName(TEXT("BulletEditor"));
+
+TSharedPtr<FBulletAssetEditor> FBulletAssetEditor::BulletAssetEditor;
+
 const FName FBulletAssetEditor::BulletEditorAppIdentifier(TEXT("BulletEditorApp"));
 const FName FBulletAssetEditor::MovementListTabId(TEXT("MovementListTab"));
 const FName FBulletAssetEditor::BulletActorTabId(TEXT("BulletActorTab"));
@@ -86,7 +91,7 @@ TSharedRef<SDockTab> FBulletAssetEditor::SpawnBulletActorTab(const FSpawnTabArgs
 			]
 			+ SVerticalBox::Slot()
 			[
-				SNew(SBulletGraphTab)
+				SAssignNew(BulletGraphTab, SBulletGraphTab)
 			]
 			
 		];
@@ -106,10 +111,21 @@ TSharedRef<SDockTab> FBulletAssetEditor::SpawnDetailTab(const FSpawnTabArgs& Arg
 {
 	check(Args.GetTabId() == DetailTabId);
 
+	//디테일 패널 생성
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
+
+	if (DetailView == nullptr)
+	{
+		DetailView = PropertyEditorModule.CreateDetailView(FDetailsViewArgs());
+	}
+
 	return SNew(SDockTab)
 		[
-			SNew(STextBlock)
-			.Text(FText::FromString("Detail"))
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			[
+				DetailView.ToSharedRef()
+			]
 		];
 }
 
@@ -278,9 +294,12 @@ void FBulletAssetEditor::OnObjectsReplaced(const TMap<UObject*, UObject*>& Repla
 
 TSharedRef<FBulletAssetEditor> FBulletAssetEditor::CreateEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit)
 {
-	TSharedRef< FBulletAssetEditor > NewEditor(new FBulletAssetEditor());
-	NewEditor->InitEditor(Mode, InitToolkitHost, ObjectsToEdit);
-	return NewEditor;
+	if (BulletAssetEditor == nullptr)
+	{
+		BulletAssetEditor = MakeShareable(new FBulletAssetEditor);
+		BulletAssetEditor->InitEditor(Mode, InitToolkitHost, ObjectsToEdit);
+	}
+	return BulletAssetEditor.ToSharedRef();
 }
 
 void FBulletAssetEditor::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit)
