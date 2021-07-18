@@ -20,6 +20,7 @@ public:
 	FBulletEditorViewport(FPreviewScene* InPreviewScene);
 
 	virtual void Tick(float DeltaTime) override;
+	virtual void ProcessClick(FSceneView& View, HHitProxy* HitProxy, FKey Key, EInputEvent Event, uint32 HitX, uint32 HitY);
 
 	void Play();
 	void Stop();

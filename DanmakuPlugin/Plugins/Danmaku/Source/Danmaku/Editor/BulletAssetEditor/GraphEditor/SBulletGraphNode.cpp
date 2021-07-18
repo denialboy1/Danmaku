@@ -4,6 +4,7 @@
 #include "SBulletGraphNode.h"
 #include "BulletEdGraphNode.h"
 #include "Danmaku/Editor/BulletAssetEditor/BulletAttributeList/BulletAttributeDragDropOperation.h"
+#include "Danmaku/Editor/BulletAssetEditor/BulletAssetEditor.h"
 
 #include "Widgets/Input/SButton.h"
 #include "SNodePanel.h"
@@ -24,6 +25,23 @@ FReply SBulletGraphNode::OnDrop(const FGeometry& MyGeometry, const FDragDropEven
 		AddBulletAttribute(GraphDropOp->GetAttributeName());
 		return FReply::Handled();
 	}
+	return FReply::Unhandled();
+}
+
+FReply SBulletGraphNode::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	TSharedPtr<FBulletAssetEditor> BulletAssetEditor = FBulletAssetEditor::BulletAssetEditor;
+	if (BulletAssetEditor)
+	{
+		TSharedPtr<IDetailsView> DetailView = FBulletAssetEditor::BulletAssetEditor->GetDetailView();
+		if (DetailView)
+		{
+			DetailView->SetObject(GraphNode);
+
+			return SGraphNode::OnMouseButtonDown(MyGeometry, MouseEvent);
+		}
+	}
+
 	return FReply::Unhandled();
 }
 

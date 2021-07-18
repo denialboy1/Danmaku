@@ -19,4 +19,7 @@ public:
 	TSharedPtr<SGraphEditor> GraphEditorPtr;
 
 	class UBulletEdGraph* GraphObj;
+
+public:
+	UBulletEdGraph* GetBulletGraph() {return GraphObj;}
 };

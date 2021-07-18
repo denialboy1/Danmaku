@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "FBulletEditorViewport.h"
+#include "Danmaku/Editor/BulletAssetEditor/BulletAssetEditor.h"
+
 #include "UObject/ConstructorHelpers.h"
-#include "UObject/UObjectGlobals.h"
 #include "EngineUtils.h"
 
 FBulletEditorViewport::FBulletEditorViewport(FPreviewScene* InPreviewScene) : FEditorViewportClient(nullptr, InPreviewScene)
@@ -46,6 +47,42 @@ void FBulletEditorViewport::Tick(float DeltaTime)
 			if (!Actor->IsPendingKillPending())
 			{
 				Actor->SetActorLocation(Actor->GetActorLocation() + FVector(0, 2.0f * DeltaTime, 0));
+			}
+		}
+	}
+}
+
+void FBulletEditorViewport::ProcessClick(FSceneView& View, HHitProxy* HitProxy, FKey Key, EInputEvent Event, uint32 HitX, uint32 HitY)
+{
+	FEditorViewportClient::ProcessClick(View, HitProxy, Key, Event, HitX, HitY);
+
+	const FViewportClick Click(&View, this, Key, Event, HitX, HitY);
+	if (Click.GetKey() == EKeys::LeftMouseButton)
+	{
+		if (HitProxy != nullptr)
+		{
+			if (HitProxy->IsA(HActor::StaticGetType()))
+			{
+				HActor* ActorHitProxy = (HActor*)HitProxy;
+				AActor* ConsideredActor = ActorHitProxy->Actor;
+				if (ConsideredActor) // It is possible to be clicking something during level transition if you spam click, and it might not be valid by this point
+				{
+					while (ConsideredActor->IsChildActor())
+					{
+						ConsideredActor = ConsideredActor->GetParentActor();
+					}
+
+					//액터 선택
+					TSharedPtr<FBulletAssetEditor> BulletAssetEditor = FBulletAssetEditor::BulletAssetEditor;
+					if (BulletAssetEditor)
+					{
+						TSharedPtr<IDetailsView> DetailView = FBulletAssetEditor::BulletAssetEditor->GetDetailView();
+						if (DetailView)
+						{
+							DetailView->SetObject(ConsideredActor);
+						}
+					}
+				}
 			}
 		}
 	}

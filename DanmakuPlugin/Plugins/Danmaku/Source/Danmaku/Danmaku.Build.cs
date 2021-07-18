@@ -39,6 +39,7 @@ public class Danmaku : ModuleRules
 				"UnrealEd",
 				"ToolMenus",
 				"CoreUObject",
+				"PropertyEditor",
 				"Engine",
 				"Slate",
 				"SlateCore",

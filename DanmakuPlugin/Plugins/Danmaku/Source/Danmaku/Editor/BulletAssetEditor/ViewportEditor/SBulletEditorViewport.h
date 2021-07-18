@@ -20,7 +20,8 @@ public:
 
 protected:
 	virtual TSharedRef<FEditorViewportClient> MakeEditorViewportClient();
-
+	virtual void OnFocusViewportToSelection() override;
+	virtual FReply OnFocusReceived(const FGeometry& MyGeometry, const FFocusEvent& InFocusEvent) override;
 private:
 	TSharedPtr<class FPreviewScene> PreviewScene;
 	TSharedPtr<FBulletEditorViewport> EditorViewportClient;
