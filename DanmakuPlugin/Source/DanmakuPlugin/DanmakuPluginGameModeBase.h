@@ -13,5 +13,4 @@ UCLASS()
 class DANMAKUPLUGIN_API ADanmakuPluginGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
 };

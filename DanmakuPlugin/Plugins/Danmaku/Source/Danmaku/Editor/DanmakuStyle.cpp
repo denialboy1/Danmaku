@@ -34,16 +34,16 @@ if (Instance) \
 
 void FDanmakuStyle::Initialize()
 {
-	REGISTER_SLATE_STYLE(PlayButtonNormalInstance, TEXT("PlayButton.Normal"), TEXT("BulletAssetEditor.PlayButton.Normal"), TEXT("PlayButton"), FVector2D(30, 30), FLinearColor(0.3f, 0.3f, 0.3f, 1.0f));
-	REGISTER_SLATE_STYLE(PlayButtonHorveredInstance, TEXT("PlayButton.Horvered"), TEXT("BulletAssetEditor.PlayButton.Horvered"), TEXT("PlayButton"), FVector2D(30, 30), FLinearColor(0.5f,0.5f,0.5f,1.0f));
-	REGISTER_SLATE_STYLE(PlayButtonPressedInstance, TEXT("PlayButton.Pressed"), TEXT("BulletAssetEditor.PlayButton.Pressed"), TEXT("PlayButton"), FVector2D(30, 30), FLinearColor(0.05f, 0.05f, 0.05f, 1.0f));
-	REGISTER_SLATE_STYLE(StopButtonNormalInstance, TEXT("StopButton.Normal"), TEXT("BulletAssetEditor.StopButton.Normal"), TEXT("StopButton"), FVector2D(30, 30), FLinearColor(0.3f, 0.3f, 0.3f, 1.0f));
-	REGISTER_SLATE_STYLE(StopButtonHorveredInstance, TEXT("StopButton.Horvered"), TEXT("BulletAssetEditor.StopButton.Horvered"), TEXT("StopButton"), FVector2D(30, 30), FLinearColor(0.5f, 0.5f, 0.5f, 1.0f));
-	REGISTER_SLATE_STYLE(StopButtonPressedInstance, TEXT("StopButton.Pressed"), TEXT("BulletAssetEditor.StopButton.Pressed"), TEXT("StopButton"), FVector2D(30, 30), FLinearColor(0.05f, 0.05f, 0.05f, 1.0f));
-	REGISTER_SLATE_STYLE(PauseButtonNormalInstance, TEXT("PauseButton.Normal"), TEXT("BulletAssetEditor.PauseButton.Normal"), TEXT("PauseButton"), FVector2D(30, 30), FLinearColor(0.3f, 0.3f, 0.3f, 1.0f));
-	REGISTER_SLATE_STYLE(PauseButtonHorveredInstance, TEXT("PauseButton.Horvered"), TEXT("BulletAssetEditor.PauseButton.Horvered"), TEXT("PauseButton"), FVector2D(30, 30), FLinearColor(0.5f, 0.5f, 0.5f, 1.0f));
-	REGISTER_SLATE_STYLE(PauseButtonPressedInstance, TEXT("PauseButton.Pressed"), TEXT("BulletAssetEditor.PauseButton.Pressed"), TEXT("PauseButton"), FVector2D(30, 30), FLinearColor(0.05f, 0.05f, 0.05f, 1.0f));
-	REGISTER_SLATE_STYLE(PlayButtonPressedInstance, TEXT("PlayingButton"), TEXT("BulletAssetEditor.PlayingButton"), TEXT("PlayingButton"), FVector2D(30, 30));
+	REGISTER_SLATE_STYLE(PlayButtonNormalInstance, TEXT("PlayButton.Normal"), TEXT("BulletEditor.PlayButton.Normal"), TEXT("PlayButton"), FVector2D(30, 30), FLinearColor(0.3f, 0.3f, 0.3f, 1.0f));
+	REGISTER_SLATE_STYLE(PlayButtonHorveredInstance, TEXT("PlayButton.Horvered"), TEXT("BulletEditor.PlayButton.Horvered"), TEXT("PlayButton"), FVector2D(30, 30), FLinearColor(0.5f,0.5f,0.5f,1.0f));
+	REGISTER_SLATE_STYLE(PlayButtonPressedInstance, TEXT("PlayButton.Pressed"), TEXT("BulletEditor.PlayButton.Pressed"), TEXT("PlayButton"), FVector2D(30, 30), FLinearColor(0.05f, 0.05f, 0.05f, 1.0f));
+	REGISTER_SLATE_STYLE(StopButtonNormalInstance, TEXT("StopButton.Normal"), TEXT("BulletEditor.StopButton.Normal"), TEXT("StopButton"), FVector2D(30, 30), FLinearColor(0.3f, 0.3f, 0.3f, 1.0f));
+	REGISTER_SLATE_STYLE(StopButtonHorveredInstance, TEXT("StopButton.Horvered"), TEXT("BulletEditor.StopButton.Horvered"), TEXT("StopButton"), FVector2D(30, 30), FLinearColor(0.5f, 0.5f, 0.5f, 1.0f));
+	REGISTER_SLATE_STYLE(StopButtonPressedInstance, TEXT("StopButton.Pressed"), TEXT("BulletEditor.StopButton.Pressed"), TEXT("StopButton"), FVector2D(30, 30), FLinearColor(0.05f, 0.05f, 0.05f, 1.0f));
+	REGISTER_SLATE_STYLE(PauseButtonNormalInstance, TEXT("PauseButton.Normal"), TEXT("BulletEditor.PauseButton.Normal"), TEXT("PauseButton"), FVector2D(30, 30), FLinearColor(0.3f, 0.3f, 0.3f, 1.0f));
+	REGISTER_SLATE_STYLE(PauseButtonHorveredInstance, TEXT("PauseButton.Horvered"), TEXT("BulletEditor.PauseButton.Horvered"), TEXT("PauseButton"), FVector2D(30, 30), FLinearColor(0.5f, 0.5f, 0.5f, 1.0f));
+	REGISTER_SLATE_STYLE(PauseButtonPressedInstance, TEXT("PauseButton.Pressed"), TEXT("BulletEditor.PauseButton.Pressed"), TEXT("PauseButton"), FVector2D(30, 30), FLinearColor(0.05f, 0.05f, 0.05f, 1.0f));
+	REGISTER_SLATE_STYLE(PlayButtonPressedInstance, TEXT("PlayingButton"), TEXT("BulletEditor.PlayingButton"), TEXT("PlayingButton"), FVector2D(30, 30));
 }
 
 

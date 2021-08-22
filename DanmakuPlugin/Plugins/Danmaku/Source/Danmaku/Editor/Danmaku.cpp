@@ -4,12 +4,12 @@
 
 #include "Danmaku/Editor/DanmakuDetails.h"
 #include "Danmaku/Editor/SDanmakuEditorViewport.h"
-#include "Danmaku/Editor/BulletAssetEditor/FBulletAssetActions.h"
-#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/BulletEdGraphNode.h"
-#include "Danmaku/Editor/BulletAssetEditor/GraphEditor/BulletGraphEditorDetailCustomization.h"
-#include "Danmaku/Editor/BulletAssetEditor/ViewportEditor/BulletViewportEditorDetailCustomization.h"
+#include "Danmaku/Editor/BulletEditor/BulletAssetActions.h"
+#include "Danmaku/Editor/BulletEditor/GraphEditor/BulletEdGraphNode.h"
+#include "Danmaku/Editor/BulletEditor/GraphEditor/BulletGraphEditorDetailCustomization.h"
+#include "Danmaku/Editor/BulletEditor/ViewportEditor/BulletViewportEditorDetailCustomization.h"
 
-#include "Danmaku/Bullet/Bullet.h"
+#include "Danmaku/Actor/Bullet/Bullet.h"
 
 
 #include "DanmakuStyle.h"
@@ -88,7 +88,6 @@ void FDanmakuModule::StartupModule()
 		FEdGraphUtilities::RegisterVisualNodeFactory(BulletGraphNodeFactory);
 	}
 	
-
 }
 
 void FDanmakuModule::ShutdownModule()
