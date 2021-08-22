@@ -6,56 +6,75 @@
 #include "Components/StaticMeshComponent.h"
 #include "EngineUtils.h"
 #include "Engine/StreamableManager.h"
+#include "Materials/MaterialExpressionConstant3Vector.h"
 
 FBulletEditorViewport::FBulletEditorViewport(FPreviewScene* InPreviewScene) : FEditorViewportClient(nullptr, InPreviewScene)
 {
 	PreviewScene = InPreviewScene;
+	
+	SetViewportType(ELevelViewportType::LVT_OrthoYZ);
+	SetOrthoZoom(100000.0f);
+	SetViewMode(VMI_Lit);
 
-	auto CreateEditorActor = [=](AActor* Actor, FString BPPath, FVector Location, FRotator Rotation)
-	{
-		UClass* BPClass = LoadClass<AActor>(NULL, *BPPath);
-		if (IsValid(BPClass))
+	auto CreateDanmakuActor = [=](FVector InLocation, FVector InScale, UStaticMesh* InStaticMesh, UMaterial* InMaterial) {
+		FActorSpawnParameters ActorSpawnParamters = FActorSpawnParameters();
+		ActorSpawnParamters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		//아직 루트 컴포넌트가 없기 때문에 월드에 좌표를 찍을수가 없음.
+		AActor* Actor = PreviewScene->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator(), ActorSpawnParamters);
+
+		UStaticMeshComponent* StaticMeshComponent = NewObject<UStaticMeshComponent>(Actor, UStaticMeshComponent::StaticClass(), FName("StaticMesh"));
+		if (StaticMeshComponent)
 		{
-			Actor = PreviewScene->GetWorld()->SpawnActor<AActor>(BPClass, Location, Rotation);
-			
+			StaticMeshComponent->RegisterComponent();
+			StaticMeshComponent->SetRelativeLocation(InLocation);
+			StaticMeshComponent->SetStaticMesh(InStaticMesh);
+			StaticMeshComponent->SetRelativeScale3D(InScale);
+
+			UMaterial* Material = InMaterial;
+			if (IsValid(Material) == false)
+			{
+				Material = NewObject<UMaterial>(Actor, UMaterial::StaticClass(), FName("Material"));
+
+				UMaterialExpressionConstant3Vector* BaseColorFactorNode = NewObject<UMaterialExpressionConstant3Vector>();
+				BaseColorFactorNode->Constant = FColor::Red; 
+				Material->BaseColor.Connect(0, BaseColorFactorNode);
+				Material->PostEditChange();
+			}
+			StaticMeshComponent->SetMaterial(0, Material);
+
+			Actor->SetRootComponent(StaticMeshComponent);
 		}
-		else
-		{
-			Actor = PreviewScene->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), Location, Rotation);
-		}
-		Actor->SetActorScale3D(FVector(0.1f, 0.1f, 0.1f));
 	};
 
-	CreateEditorActor(Enemy, TEXT("Blueprint'/Danmaku/Actor/Enemy/BulletEditorEnemy/BulletEditorEnemy.BulletEditorEnemy_C'"), FVector(0,0, 500.f), FRotator(0,0,0));
-	CreateEditorActor(Player, TEXT("Blueprint'/Danmaku/Actor/Player/BulletEditorPlayer/BulletEditorPlayer.BulletEditorPlayer_C'"), FVector(0, 0, -500.f), FRotator(0, 0, 0));
+	FSoftObjectPath SphereObjectPath = TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'");
+	TSoftObjectPtr<UStaticMesh> SphereObject(SphereObjectPath);
 
-	//AActor* Actor = NewObject<AActor>(AActor::StaticClass());
-	//USceneComponent* SceneComponent = NewObject<USceneComponent>(USceneComponent::StaticClass());
-	//SceneComponent->RegisterComponent();
-	//Actor->SetRootComponent(SceneComponent);
-	AActor* Actor = PreviewScene->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector(), FRotator());
-	//UBoxComponent* BoxComponent = NewObject<UBoxComponent>(UBoxComponent::StaticClass());
-	//Actor->SetRootComponent(BoxComponent);
+	//적 생성
+	FSoftObjectPath RedMaterialPath = TEXT("Material'/Engine/EditorMaterials/WidgetMaterial_X.WidgetMaterial_X'");
+	TSoftObjectPtr<UMaterial> RedMaterialObject(RedMaterialPath);
+	CreateDanmakuActor(FVector(0, 0, 3000), FVector(1.0f, 1.0f, 1.0f), SphereObject.Get(), RedMaterialObject.Get());
 
-	UStaticMeshComponent* StaticMeshComponent = NewObject<UStaticMeshComponent>(Actor, UStaticMeshComponent::StaticClass(), FName("Test"));
-	if(StaticMeshComponent)
-	{
-		StaticMeshComponent->RegisterComponent();
-		//StaticMeshComponent->AttachTo(Actor->GetRootComponent());
-		FSoftObjectPath Path = TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'");
-		TSoftObjectPtr<UStaticMesh> Cube(Path);
-		StaticMeshComponent->SetStaticMesh(Cube.LoadSynchronous());
-		StaticMeshComponent->SetRelativeTransform(FTransform());
+	//플레이어 생성
+	FSoftObjectPath BlueMaterialPath = TEXT("Material'/Engine/EditorMaterials/WidgetMaterial_Z.WidgetMaterial_Z'");
+	TSoftObjectPtr<UMaterial> BlueMaterialObject(BlueMaterialPath);
+	CreateDanmakuActor(FVector(0, 0, -3000), FVector(1.0f, 1.0f, 1.0f), SphereObject.Get(), BlueMaterialObject.Get());
 
-		Actor->SetRootComponent(StaticMeshComponent);
-	}
+	//벽 생성
+	FSoftObjectPath CubeObjectPath = TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'");
+	TSoftObjectPtr<UStaticMesh> CubeObject(CubeObjectPath);
 	
-	
-	//Actor->SetRootComponent(StaticMeshComponent);
+	FSoftObjectPath WhiteMaterialPath = TEXT("Material'/Engine/EditorMaterials/WidgetMaterial.WidgetMaterial'");
+	TSoftObjectPtr<UMaterial> WhiteMaterialObject(WhiteMaterialPath);
 
-	SetViewLocation(FVector(0.0f, 0.0f, 100000.0f));
-	SetViewportType(ELevelViewportType::LVT_OrthoYZ);
-	SetViewMode(VMI_Lit);
+	//4방향 : 황금비
+	float ScaleRate = 70.0f;
+	float Distance = 3470.0f;
+	CreateDanmakuActor(FVector(0.0f, 0.0f, 1.618f * Distance), FVector(1.0f, 1.0f * ScaleRate, 1.0f), CubeObject.Get(), WhiteMaterialObject.Get());
+	CreateDanmakuActor(FVector(0.0f, 0.0f, -1.618f * Distance), FVector(1.0f, 1.0f * ScaleRate, 1.0f), CubeObject.Get(), WhiteMaterialObject.Get());
+	CreateDanmakuActor(FVector(0.0f, 1.0f * Distance, 0.0f ), FVector(1.0f, 1.0f, 1.618f * ScaleRate), CubeObject.Get(), WhiteMaterialObject.Get());
+	CreateDanmakuActor(FVector(0.0f,-1.0f * Distance, 0.0f), FVector(1.0f, 1.0f, 1.618f * ScaleRate), CubeObject.Get(), WhiteMaterialObject.Get());
+
 }
 
 void FBulletEditorViewport::Tick(float DeltaTime)

@@ -31,9 +31,6 @@ private:
 public:
 	FPreviewScene* PreviewScene;
 
-	class AActor* Enemy;
-	class AActor* Player;
-
 	//#todo : 추후에 초기화 시키는 방법 개선.(현재는 좌표만 되돌림)
 	TMap<FString, FVector> InitDataList;
 private:
