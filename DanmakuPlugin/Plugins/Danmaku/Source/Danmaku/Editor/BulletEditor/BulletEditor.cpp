@@ -5,16 +5,22 @@
 #include "Danmaku/Editor/BulletEditor/GraphEditor/BulletEdGraph.h"
 #include "Danmaku/Editor/BulletEditor/GraphEditor/BulletEdGraphNode.h"
 #include "Danmaku/Editor/BulletEditor/ViewportEditor/BulletViewportTab.h"
+#include "BulletEditorSetting.h"
+#include "BulletEditorCommand.h"
+#include "BulletEditorDetailCustomization.h"
 
 #define LOCTEXT_NAMESPACE "BulletEditor"
 
 //TSharedPtr<FBulletEditor> FBulletEditor::BulletEditor;
-
 const FName FBulletEditor::BulletEditorName(TEXT("BulletEditor"));
 const FName FBulletEditor::BulletAttributeListTabId(TEXT("BulletAttributeListTabId"));
 const FName FBulletEditor::BulletGraphEditorTabId(TEXT("BulletGraphEditorTabId"));
 const FName FBulletEditor::BulletViewportTabId(TEXT("BulletViewportTabId"));
 const FName FBulletEditor::BulletDetailsTabId(TEXT("BulletDetailsTabId"));
+
+TSharedPtr<FBulletEditor> FBulletEditor::BulletEditor;
+TSharedPtr<IDetailsView> FBulletEditor::DetailView;
+UBulletEditorSetting* FBulletEditor::BulletEditorSetting;
 
 FBulletEditor::~FBulletEditor()
 {
@@ -48,9 +54,21 @@ FLinearColor FBulletEditor::GetWorldCentricTabColorScale() const
 TSharedRef<FBulletEditor> FBulletEditor::CreateEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit)
 {
 	TSharedRef< FBulletEditor > NewEditor(new FBulletEditor());
+	BulletEditor = NewEditor;
+
 	NewEditor->InitEditor(Mode, InitToolkitHost, ObjectsToEdit);
 
 	return NewEditor;
+}
+
+
+TSharedPtr<FBulletEditor> FBulletEditor::GetInstance()
+{
+	if (BulletEditor == nullptr)
+	{
+		return TSharedRef<FBulletEditor>(new FBulletEditor());
+	}
+	return BulletEditor;
 }
 
 void FBulletEditor::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit)
@@ -106,7 +124,46 @@ void FBulletEditor::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr< 
 
 	const bool bCreateDefaultStandaloneMenu = true;
 	const bool bCreateDefaultToolbar = true;
+
 	FAssetEditorToolkit::InitAssetEditor(Mode, InitToolkitHost, FBulletEditor::BulletEditorName, StandaloneDefaultLayout, bCreateDefaultStandaloneMenu, bCreateDefaultToolbar, ObjectsToEdit);
+
+	ExtendToolbar();
+}
+
+void FBulletEditor::ExtendToolbar()
+{
+	TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
+
+	struct Local
+	{
+		static void FillToolbar(FToolBarBuilder& ToolbarBuilder)
+		{
+			const FBulletEditorCommand& BulletEditorCommands = FBulletEditorCommand::Get();
+
+			ToolbarBuilder.BeginSection("Command");
+			ToolbarBuilder.AddToolBarButton(BulletEditorCommands.CommandShowBulletEditorSetting);
+			ToolbarBuilder.EndSection();
+		}
+	};
+
+	ToolbarExtender->AddToolBarExtension(
+		"Asset",
+		EExtensionHook::After,
+		/*ViewportPtr->GetCommandList()*/ GetToolkitCommands(),
+		FToolBarExtensionDelegate::CreateStatic(&Local::FillToolbar)
+	);
+
+	GetToolkitCommands()->MapAction(FBulletEditorCommand::Get().CommandShowBulletEditorSetting, FExecuteAction::CreateSP(this, &FBulletEditor::ShowBulletEditorSetting), FCanExecuteAction());
+
+	AddToolbarExtender(ToolbarExtender);
+	RegenerateMenusAndToolbars();
+}
+
+void FBulletEditor::ShowBulletEditorSetting()
+{
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+	PropertyEditorModule.RegisterCustomClassLayout(TEXT("BulletEditorSetting"), FOnGetDetailCustomizationInstance::CreateStatic(&BulletEditorDetailCustomization::MakeInstance, BulletEditorDetailCustomization::EActorType::GAMESETTING));
+	SetDetailViewObject(BulletEditorSetting);
 }
 
 void FBulletEditor::OnObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap)
@@ -125,6 +182,16 @@ void FBulletEditor::OnObjectsReplaced(const TMap<UObject*, UObject*>& Replacemen
 			bChangedAny = true;
 		}
 	}
+}
+
+TSharedPtr<class SBulletViewportTab> FBulletEditor::GetBulletViewportTab()
+{
+	if (BulletViewportTab == nullptr)
+	{
+		BulletViewportTab = SNew(SBulletViewportTab);
+	}
+
+	return BulletViewportTab;
 }
 
 void FBulletEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager)
@@ -225,7 +292,7 @@ TSharedRef<SDockTab> FBulletEditor::SpawnBulletViewportTab(const FSpawnTabArgs& 
 
 	return SNew(SDockTab)
 		[
-			SNew(SBulletViewportTab)
+			SAssignNew(BulletViewportTab, SBulletViewportTab)
 		];
 }
 
@@ -248,6 +315,25 @@ TSharedRef<SDockTab> FBulletEditor::SpawnBulletDetailsTab(const FSpawnTabArgs& A
 		];
 }
 
-TSharedPtr<IDetailsView> FBulletEditor::DetailView;
+void FBulletEditor::SetDetailViewObject(UObject* DetailViewObject)
+{
+	if (DetailView)
+	{
+		DetailView->SetObject(DetailViewObject);
+		DetailView->ForceRefresh();
+	}
+}
+
+UBulletEditorSetting* FBulletEditor::GetBulletEditorSettingInstance()
+{
+	if (BulletEditorSetting == nullptr)
+	{
+		BulletEditorSetting = NewObject<UBulletEditorSetting>();
+		BulletEditorSetting->SetBulletSpawnPerSecond(1.0f);
+		BulletEditorSetting->AddToRoot();
+	}
+
+	return BulletEditorSetting;
+}
 
 #undef LOCTEXT_NAMESPACE

@@ -7,59 +7,72 @@
 #include "EngineUtils.h"
 #include "Engine/StreamableManager.h"
 #include "Materials/MaterialExpressionConstant3Vector.h"
-
+#include "Engine/AssetManager.h"
+#include "Danmaku/Movement/BulletMovementComponent.h"
+#include "Danmaku/Actor/DanmakuBullet/DanmakuBullet.h"
+#include "Danmaku/Editor/BulletEditor/BulletEditorSetting.h"
+#include "Danmaku/Actor/DanmakuActor/DanmakuActor.h"
+#include "Engine/EngineTypes.h"
+#include "Danmaku/Editor/BulletEditor/BulletEditorDetailCustomization.h"
 FBulletEditorViewport::FBulletEditorViewport(FPreviewScene* InPreviewScene) : FEditorViewportClient(nullptr, InPreviewScene)
 {
 	PreviewScene = InPreviewScene;
 	
-	SetViewportType(ELevelViewportType::LVT_OrthoYZ);
-	SetOrthoZoom(100000.0f);
+	SetViewportType(ELevelViewportType::LVT_OrthoXY);
+
+	FBulletEditor::GetBulletEditorSettingInstance()->SetCameraDistance(100000.0f);
+	SetOrthoZoom(FBulletEditor::GetBulletEditorSettingInstance()->GetCameraDistance());
+
 	SetViewMode(VMI_Lit);
 
-	auto CreateDanmakuActor = [=](FVector InLocation, FVector InScale, UStaticMesh* InStaticMesh, UMaterial* InMaterial) {
-		FActorSpawnParameters ActorSpawnParamters = FActorSpawnParameters();
-		ActorSpawnParamters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SetIsSimulateInEditorViewport(true);
+	
+	auto CreateDanmakuActor = [this](FVector InLocation, UMaterial* InMaterial, FString InTagName) -> ADanmakuActor*
+	{
+		FSoftObjectPath SphereObjectPath = TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'");
+		TSoftObjectPtr<UStaticMesh> SphereObject(SphereObjectPath);
 
-		//아직 루트 컴포넌트가 없기 때문에 월드에 좌표를 찍을수가 없음.
-		AActor* Actor = PreviewScene->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator(), ActorSpawnParamters);
-
-		UStaticMeshComponent* StaticMeshComponent = NewObject<UStaticMeshComponent>(Actor, UStaticMeshComponent::StaticClass(), FName("StaticMesh"));
-		if (StaticMeshComponent)
+		if (PreviewScene && PreviewScene->GetWorld())
 		{
-			StaticMeshComponent->RegisterComponent();
-			StaticMeshComponent->SetRelativeLocation(InLocation);
-			StaticMeshComponent->SetStaticMesh(InStaticMesh);
-			StaticMeshComponent->SetRelativeScale3D(InScale);
+			FActorSpawnParameters ActorSpawnParamters = FActorSpawnParameters();
+			ActorSpawnParamters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-			UMaterial* Material = InMaterial;
-			if (IsValid(Material) == false)
+			ADanmakuActor* DanmakuActor = PreviewScene->GetWorld()->SpawnActor<ADanmakuActor>(ADanmakuActor::StaticClass(), InLocation, FRotator(), ActorSpawnParamters);
+
+			if (DanmakuActor)
 			{
-				Material = NewObject<UMaterial>(Actor, UMaterial::StaticClass(), FName("Material"));
+				UStaticMeshComponent* StaticMeshComponent = DanmakuActor->FindComponentByClass<UStaticMeshComponent>();
 
-				UMaterialExpressionConstant3Vector* BaseColorFactorNode = NewObject<UMaterialExpressionConstant3Vector>();
-				BaseColorFactorNode->Constant = FColor::Red; 
-				Material->BaseColor.Connect(0, BaseColorFactorNode);
-				Material->PostEditChange();
+				StaticMeshComponent->SetStaticMesh(SphereObject.Get());
+				StaticMeshComponent->SetMaterial(0, InMaterial);
+
+				DanmakuActor->Tags.Add(*InTagName);
+
+				return DanmakuActor;
 			}
-			StaticMeshComponent->SetMaterial(0, Material);
-
-			Actor->SetRootComponent(StaticMeshComponent);
 		}
+
+		return nullptr;
 	};
 
-	FSoftObjectPath SphereObjectPath = TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'");
-	TSoftObjectPtr<UStaticMesh> SphereObject(SphereObjectPath);
+	//Player 생성
+	FSoftObjectPath PlayerMaterialPath = TEXT("Material'/Engine/EditorMaterials/WidgetMaterial_Z.WidgetMaterial_Z'");
+	TSoftObjectPtr<UMaterial> PlayerMaterialObject(PlayerMaterialPath);
+	Player = CreateDanmakuActor(FVector(0, 4000, 0), PlayerMaterialObject.Get(), TEXT("Player"));
+	if (IsValid(Player))
+	{
+		FBulletEditor::GetBulletEditorSettingInstance()->SetPlayer(Player);
+	}
 
-	//적 생성
-	FSoftObjectPath RedMaterialPath = TEXT("Material'/Engine/EditorMaterials/WidgetMaterial_X.WidgetMaterial_X'");
-	TSoftObjectPtr<UMaterial> RedMaterialObject(RedMaterialPath);
-	CreateDanmakuActor(FVector(0, 0, 3000), FVector(1.0f, 1.0f, 1.0f), SphereObject.Get(), RedMaterialObject.Get());
-
-	//플레이어 생성
-	FSoftObjectPath BlueMaterialPath = TEXT("Material'/Engine/EditorMaterials/WidgetMaterial_Z.WidgetMaterial_Z'");
-	TSoftObjectPtr<UMaterial> BlueMaterialObject(BlueMaterialPath);
-	CreateDanmakuActor(FVector(0, 0, -3000), FVector(1.0f, 1.0f, 1.0f), SphereObject.Get(), BlueMaterialObject.Get());
-
+	//Enemy 생성
+	FSoftObjectPath EnemyMaterialPath = TEXT("Material'/Engine/EditorMaterials/WidgetMaterial_X.WidgetMaterial_X'");
+	TSoftObjectPtr<UMaterial> EnemyMaterialObject(EnemyMaterialPath);
+	Enemy = CreateDanmakuActor(FVector(0, -4000, 0), EnemyMaterialObject.Get(), TEXT("Enemy"));
+	if (IsValid(Enemy))
+	{
+		FBulletEditor::GetBulletEditorSettingInstance()->SetEnemy(Enemy);
+	}
+		
 	//벽 생성
 	FSoftObjectPath CubeObjectPath = TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'");
 	TSoftObjectPtr<UStaticMesh> CubeObject(CubeObjectPath);
@@ -67,14 +80,69 @@ FBulletEditorViewport::FBulletEditorViewport(FPreviewScene* InPreviewScene) : FE
 	FSoftObjectPath WhiteMaterialPath = TEXT("Material'/Engine/EditorMaterials/WidgetMaterial.WidgetMaterial'");
 	TSoftObjectPtr<UMaterial> WhiteMaterialObject(WhiteMaterialPath);
 
-	//4방향 : 황금비
-	float ScaleRate = 70.0f;
-	float Distance = 3470.0f;
-	CreateDanmakuActor(FVector(0.0f, 0.0f, 1.618f * Distance), FVector(1.0f, 1.0f * ScaleRate, 1.0f), CubeObject.Get(), WhiteMaterialObject.Get());
-	CreateDanmakuActor(FVector(0.0f, 0.0f, -1.618f * Distance), FVector(1.0f, 1.0f * ScaleRate, 1.0f), CubeObject.Get(), WhiteMaterialObject.Get());
-	CreateDanmakuActor(FVector(0.0f, 1.0f * Distance, 0.0f ), FVector(1.0f, 1.0f, 1.618f * ScaleRate), CubeObject.Get(), WhiteMaterialObject.Get());
-	CreateDanmakuActor(FVector(0.0f,-1.0f * Distance, 0.0f), FVector(1.0f, 1.0f, 1.618f * ScaleRate), CubeObject.Get(), WhiteMaterialObject.Get());
+	//50.0f가 엔진에서 제공하는 큐브의 한 변 길이
+	auto CreateWall = [=](UStaticMesh* InStaticMesh, UMaterial* InMaterial, FVector InLocation, FVector InBoxSize) -> AActor* {
+		FActorSpawnParameters ActorSpawnParamters = FActorSpawnParameters();
+		ActorSpawnParamters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
+		//아직 루트 컴포넌트가 없기 때문에 월드에 좌표를 찍을수가 없음.
+		AActor* Actor = PreviewScene->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator(), ActorSpawnParamters);
+		
+		if (IsValid(Actor))
+		{
+			UBoxComponent* BoxComponent = NewObject<UBoxComponent>(Actor, UBoxComponent::StaticClass(), FName("BoxComponent"));
+			if (BoxComponent)
+			{
+				BoxComponent->RegisterComponent();
+				BoxComponent->SetBoxExtent(InBoxSize);
+				Actor->SetRootComponent(BoxComponent);
+			}
+
+			UStaticMeshComponent* StaticMeshComponent = NewObject<UStaticMeshComponent>(Actor, UStaticMeshComponent::StaticClass(), FName("StaticMeshComponent"));
+			if (StaticMeshComponent)
+			{
+				StaticMeshComponent->RegisterComponent();
+				StaticMeshComponent->SetStaticMesh(InStaticMesh);
+
+				UMaterial* Material = InMaterial;
+				if (IsValid(Material) == false)
+				{
+					Material = NewObject<UMaterial>(Actor, UMaterial::StaticClass(), FName("Material"));
+
+					UMaterialExpressionConstant3Vector* BaseColorFactorNode = NewObject<UMaterialExpressionConstant3Vector>();
+					BaseColorFactorNode->Constant = FColor::White;
+					Material->BaseColor.Connect(0, BaseColorFactorNode);
+					Material->PostEditChange();
+				}
+				StaticMeshComponent->SetMaterial(0, Material);
+				StaticMeshComponent->AttachToComponent(Actor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+				StaticMeshComponent->SetRelativeScale3D(InBoxSize / 50.0f);
+			}
+		     
+			Actor->SetActorLocation(InLocation);
+
+			Actor->Tags.Add(TEXT("Wall"));
+		}
+
+		return Actor;
+	};
+
+	FVector2D BoxSize = FVector2D(85.0f, 105.0f);
+	FBulletEditor::GetBulletEditorSettingInstance()->SetWallSize(BoxSize);
+
+	WallArray.Empty();
+	//Width
+	WallArray.Add(CreateWall(CubeObject.Get(), WhiteMaterialObject.Get(), FVector(0.0f, BoxSize.Y  * 50.0f, 0.0f), FVector(BoxSize.X * 50.0f, 50.0f, 50.0f)));
+	WallArray.Add(CreateWall(CubeObject.Get(), WhiteMaterialObject.Get(), FVector(0.0f, -1.0f * BoxSize.Y * 50.0f, 0.0f), FVector(BoxSize.X * 50.0f, 50.0f, 50.0f)));
+	//Height
+	WallArray.Add(CreateWall(CubeObject.Get(), WhiteMaterialObject.Get(), FVector(BoxSize.X  * 50.0f, 0.0f, 0.0f), FVector(50.0f, BoxSize.Y * 50.0f, 50.0f)));
+	WallArray.Add(CreateWall(CubeObject.Get(), WhiteMaterialObject.Get(), FVector(- BoxSize.X  * 50.0f, 0.0f, 0.0f), FVector(50.0f, BoxSize.Y * 50.0f, 50.0f)));
+
+	if (PreviewScene != nullptr)
+	{
+		PreviewScene->GetWorld()->bBegunPlay = bIsSimulateInEditorViewport;
+		PreviewScene->GetWorld()->bShouldSimulatePhysics = bIsSimulateInEditorViewport;
+	}
 }
 
 void FBulletEditorViewport::Tick(float DeltaTime)
@@ -83,14 +151,9 @@ void FBulletEditorViewport::Tick(float DeltaTime)
 	
 	if (BulletEditorPlayType == EBulletEditorPlayType::PLAY)
 	{
-		UWorld* PreviewWorld = PreviewScene->GetWorld();
-		for (TActorIterator<AActor> It(PreviewWorld); It; ++It)
+		if (PreviewScene != nullptr && PreviewScene->GetWorld() != nullptr)
 		{
-			AActor* Actor = *It;
-			if (!Actor->IsPendingKillPending())
-			{
-				Actor->SetActorLocation(Actor->GetActorLocation() + FVector(0, 2.0f * DeltaTime, 0));
-			}
+			PreviewScene->GetWorld()->Tick(LEVELTICK_All, DeltaTime);
 		}
 	}
 }
@@ -110,17 +173,42 @@ void FBulletEditorViewport::ProcessClick(FSceneView& View, HHitProxy* HitProxy, 
 				AActor* ConsideredActor = ActorHitProxy->Actor;
 				if (ConsideredActor) // It is possible to be clicking something during level transition if you spam click, and it might not be valid by this point
 				{
-					while (ConsideredActor->IsChildActor())
+					if (ConsideredActor->IsA(ADanmakuBullet::StaticClass()))
 					{
-						ConsideredActor = ConsideredActor->GetParentActor();
+						FBulletEditor::SetDetailViewObject(ConsideredActor);
 					}
-
-					//액터 선택
-					FBulletEditor::SetDetailViewObject(ConsideredActor);
+					else
+					{
+						FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+						if (ConsideredActor->ActorHasTag(TEXT("Player")))
+						{
+							PropertyEditorModule.RegisterCustomClassLayout(TEXT("BulletEditorSetting"), FOnGetDetailCustomizationInstance::CreateStatic(&BulletEditorDetailCustomization::MakeInstance, BulletEditorDetailCustomization::EActorType::PLAYER));
+						}
+						else if (ConsideredActor->ActorHasTag(TEXT("Enemy")))
+						{
+							PropertyEditorModule.RegisterCustomClassLayout(TEXT("BulletEditorSetting"), FOnGetDetailCustomizationInstance::CreateStatic(&BulletEditorDetailCustomization::MakeInstance, BulletEditorDetailCustomization::EActorType::ENEMY));
+						}
+						else if (ConsideredActor->ActorHasTag(TEXT("Wall")))
+						{
+							PropertyEditorModule.RegisterCustomClassLayout(TEXT("BulletEditorSetting"), FOnGetDetailCustomizationInstance::CreateStatic(&BulletEditorDetailCustomization::MakeInstance, BulletEditorDetailCustomization::EActorType::WALL));
+						}
+						FBulletEditor::SetDetailViewObject(FBulletEditor::GetBulletEditorSettingInstance());
+					}
 				}
 			}
 		}
 	}
+}
+
+bool FBulletEditorViewport::InputKey(FViewport* InViewport, int32 ControllerId, FKey Key, EInputEvent Event, float AmountDepressed /*= 1.f*/, bool bGamepad /*= false*/)
+{
+	if ((Key == EKeys::MouseScrollUp || Key == EKeys::MouseScrollDown || Key == EKeys::Add || Key == EKeys::Subtract) && (Event == IE_Pressed || Event == IE_Repeat) && IsOrtho())
+	{
+		FViewportCameraTransform& ViewTransform = GetViewTransform();
+		FBulletEditor::GetBulletEditorSettingInstance()->SetCameraDistance(ViewTransform.GetOrthoZoom());
+	}
+
+	return FEditorViewportClient::InputKey(InViewport, ControllerId, Key, Event, AmountDepressed, bGamepad);
 }
 
 void FBulletEditorViewport::Play()
@@ -128,6 +216,22 @@ void FBulletEditorViewport::Play()
 	if (BulletEditorPlayType == EBulletEditorPlayType::STOP)
 	{
 		SaveInitData();
+
+		if (PreviewScene && PreviewScene->GetWorld())
+		{
+			if (Player)
+			{
+				PreviewScene->GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, Player, &ADanmakuActor::PlayPattern, FBulletEditor::GetBulletEditorSettingInstance()->GetBulletSpawnPerSecond(), true);
+			}
+		}
+
+		//#todo : 추후에 총알 설정하는 코드 넣으면 사용할것.
+		/*
+		if (Enemy)
+		{
+			Enemy->PlayPattern();
+		}
+		*/
 	}
 
 	BulletEditorPlayType = EBulletEditorPlayType::PLAY;
@@ -137,21 +241,27 @@ void FBulletEditorViewport::Stop()
 {
 	BulletEditorPlayType = EBulletEditorPlayType::STOP;
 
-	UWorld* PreviewWorld = PreviewScene->GetWorld();
-	for (TActorIterator<AActor> It(PreviewWorld); It; ++It)
-	{
-		AActor* Actor = *It;
-		if (!Actor->IsPendingKillPending())
-		{
-			FString ActorName;
-			Actor->GetName(ActorName);
+	ResetInitData();
 
-			if (InitDataList.Contains(ActorName))
+	if (PreviewScene != nullptr && PreviewScene->GetWorld() != nullptr)
+	{
+		UWorld* World = PreviewScene->GetWorld();
+		for (TActorIterator<AActor> It(World); It; ++It)
+		{
+			AActor* Actor = *It;
+			if (!Actor->IsPendingKillPending())
 			{
-				Actor->SetActorLocation(InitDataList[ActorName]);
+				if (Actor->IsA(ADanmakuBullet::StaticClass()))
+				{
+					Actor->Destroy();
+				}
 			}
 		}
+
+		World->GetTimerManager().ClearTimer(SpawnTimerHandle);
 	}
+	
+	
 }
 
 void FBulletEditorViewport::Pause()
@@ -159,19 +269,77 @@ void FBulletEditorViewport::Pause()
 	BulletEditorPlayType = EBulletEditorPlayType::PAUSE;
 }
 
-void FBulletEditorViewport::SaveInitData()
-{
-	InitDataList.Empty();
 
-	UWorld* PreviewWorld = PreviewScene->GetWorld();
-	for (TActorIterator<AActor> It(PreviewWorld); It; ++It)
+void FBulletEditorViewport::UpdateWallSize()
+{
+	auto UpdateWall = [=](AActor* InWall, FVector InLocation, FVector InBoxSize)
 	{
-		AActor* Actor = *It;
-		if (!Actor->IsPendingKillPending())
+		if (IsValid(InWall))
 		{
-			FString ActorName;
-			Actor->GetName(ActorName);
-			InitDataList.Add(ActorName, Actor->GetActorLocation());
+			InWall->SetActorLocation(InLocation);
+
+			UStaticMeshComponent* StaticMeshComponent = InWall->FindComponentByClass<UStaticMeshComponent>();
+			if (IsValid(StaticMeshComponent))
+			{
+				StaticMeshComponent->SetRelativeScale3D(InBoxSize / 50.0f);
+			}
+
+			UBoxComponent* BoxComponent = InWall->FindComponentByClass<UBoxComponent>();
+			if (IsValid(BoxComponent))
+			{
+				BoxComponent->SetBoxExtent(InBoxSize);
+			}
+		}
+	};
+
+	FVector2D BoxSize = FBulletEditor::GetBulletEditorSettingInstance()->GetWallSize();
+
+	//Bottom
+	if (WallArray.IsValidIndex(0))
+	{
+		if (IsValid(WallArray[0]))
+		{
+			UpdateWall(WallArray[0], FVector(0.0f, BoxSize.Y * 50.0f, 0.0f), FVector(BoxSize.X * 50.0f, 50.0f, 50.0f));
+		}
+	}
+
+	//Top
+	if (WallArray.IsValidIndex(1))
+	{
+		if (IsValid(WallArray[1]))
+		{
+			UpdateWall(WallArray[1], FVector(0.0f, -1.0f * BoxSize.Y * 50.0f, 0.0f), FVector(BoxSize.X * 50.0f, 50.0f, 50.0f));
+		}
+	}
+
+	//left
+	if (WallArray.IsValidIndex(2))
+	{
+		if (IsValid(WallArray[2]))
+		{
+			UpdateWall(WallArray[2], FVector(BoxSize.X * 50.0f, 0.0f, 0.0f), FVector(50.0f, BoxSize.Y * 50.0f, 50.0f));
+		}
+	}
+
+	//right
+	if (WallArray.IsValidIndex(3))
+	{
+		if (IsValid(WallArray[3]))
+		{
+			UpdateWall(WallArray[3], FVector(-BoxSize.X * 50.0f, 0.0f, 0.0f), FVector(50.0f, BoxSize.Y * 50.0f, 50.0f));
 		}
 	}
 }
+
+void FBulletEditorViewport::SaveInitData()
+{
+	PlayerSaveData = Player;
+	EnemySaveData = Enemy;
+}
+
+void FBulletEditorViewport::ResetInitData()
+{
+	Player = PlayerSaveData;
+	Enemy = EnemySaveData;
+}
+

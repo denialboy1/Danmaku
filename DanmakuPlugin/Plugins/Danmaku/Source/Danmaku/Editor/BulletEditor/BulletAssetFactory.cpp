@@ -2,18 +2,18 @@
 
 
 #include "BulletAssetFactory.h"
-#include "Danmaku/Actor/Bullet/Bullet.h"
+#include "Danmaku/Actor/DanmakuBullet/DanmakuBullet.h"
 
 UBulletAssetFactory::UBulletAssetFactory()
 {
 	bCreateNew = true;
 	bEditAfterNew = true;
-	SupportedClass = ABullet::StaticClass();
+	SupportedClass = ADanmakuBullet::StaticClass();
 }
 
 UObject* UBulletAssetFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn)
 {
-	ABullet* NewObjectAsset = NewObject<ABullet>(InParent, Class, Name, Flags | RF_Transactional);
+	ADanmakuBullet* NewObjectAsset = NewObject<ADanmakuBullet>(InParent, Class, Name, Flags | RF_Transactional);
 	return NewObjectAsset;
 }
 
