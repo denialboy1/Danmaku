@@ -101,3 +101,19 @@ FReply SBulletViewportTab::OnPauseButtonClicked()
 
 	return FReply::Unhandled();
 }
+
+void SBulletViewportTab::SetOrthoZoom(float CameraDistance)
+{
+	if (BulletEditorViewportPtr)
+	{
+		BulletEditorViewportPtr->SetOrthoZoom(CameraDistance);
+	}
+}
+
+void SBulletViewportTab::UpdateWallSize()
+{
+	if (BulletEditorViewportPtr)
+	{
+		BulletEditorViewportPtr->UpdateWallSize();
+	}
+}

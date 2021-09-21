@@ -35,6 +35,22 @@ void SBulletEditorViewport::PauseSimulation()
 	}
 }
 
+void SBulletEditorViewport::SetOrthoZoom(float InCameraDistance)
+{
+	if (EditorViewportClient)
+	{
+		EditorViewportClient->SetOrthoZoom(InCameraDistance);
+	}
+}
+
+void SBulletEditorViewport::UpdateWallSize()
+{
+	if (EditorViewportClient)
+	{
+		EditorViewportClient->UpdateWallSize();
+	}
+}
+
 TSharedRef<FEditorViewportClient> SBulletEditorViewport::MakeEditorViewportClient()
 {
 	PreviewScene = MakeShareable(new FPreviewScene);

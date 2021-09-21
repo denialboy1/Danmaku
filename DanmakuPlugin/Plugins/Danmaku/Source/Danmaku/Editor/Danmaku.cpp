@@ -7,9 +7,9 @@
 #include "Danmaku/Editor/BulletEditor/BulletAssetActions.h"
 #include "Danmaku/Editor/BulletEditor/GraphEditor/BulletEdGraphNode.h"
 #include "Danmaku/Editor/BulletEditor/GraphEditor/BulletGraphEditorDetailCustomization.h"
-#include "Danmaku/Editor/BulletEditor/ViewportEditor/BulletViewportEditorDetailCustomization.h"
+#include "Danmaku/Editor/BulletEditor/BulletEditorDetailCustomization.h"
 
-#include "Danmaku/Actor/Bullet/Bullet.h"
+#include "Danmaku/Actor/DanmakuBullet/DanmakuBullet.h"
 
 
 #include "DanmakuStyle.h"
@@ -27,11 +27,11 @@
 //#include "Danmaku/Editor/BulletAsset.h"
 #include "PropertyEditorDelegates.h"
 #include "PropertyEditorModule.h"
+#include "BulletEditor/BulletEditorCommand.h"
 
 
-static const FName DanmakuTabName("Danmaku");
 static const FName BulletEdGraphNodeCustomizationName("BulletEdGraphNode");
-static const FName BulletActorCustomizationName("BulletActor");
+static const FName BulletEditorCustomizationName("BulletEditorSetting");
 
 
 #define LOCTEXT_NAMESPACE "FDanmakuModule"
@@ -44,20 +44,11 @@ void FDanmakuModule::StartupModule()
 	FDanmakuStyle::ReloadTextures();
 
 	FDanmakuCommands::Register();
-	
+	FBulletEditorCommand::Register();
+
 	PluginCommands = MakeShareable(new FUICommandList);
-
-	PluginCommands->MapAction(
-		FDanmakuCommands::Get().OpenPluginWindow,
-		FExecuteAction::CreateRaw(this, &FDanmakuModule::PluginButtonClicked),
-		FCanExecuteAction());
-
-	UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FDanmakuModule::RegisterMenus));
 	
-	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(DanmakuTabName, FOnSpawnTab::CreateRaw(this, &FDanmakuModule::OnSpawnPluginTab))
-		.SetDisplayName(LOCTEXT("FDanmakuTabTitle", "Danmaku"))
-		.SetMenuType(ETabSpawnerMenuType::Hidden);
-
+	
 
 	// register custom types:
 	{
@@ -76,7 +67,8 @@ void FDanmakuModule::StartupModule()
 	FPropertyEditorModule& PropertyModule =	FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	//PropertyModule.RegisterCustomClassLayout("Bullet", FOnGetDetailCustomizationInstance::CreateStatic(&MyCustomization::MakeInsance));
 	PropertyModule.RegisterCustomClassLayout(BulletEdGraphNodeCustomizationName, FOnGetDetailCustomizationInstance::CreateStatic(&BulletGraphEditorDetailCustomization::MakeInstance));
-	PropertyModule.RegisterCustomClassLayout(BulletActorCustomizationName, FOnGetDetailCustomizationInstance::CreateStatic(&BulletViewportEditorDetailCustomization::MakeInstance));
+	PropertyModule.RegisterCustomClassLayout(BulletEditorCustomizationName, FOnGetDetailCustomizationInstance::CreateStatic(&BulletEditorDetailCustomization::MakeInstance, BulletEditorDetailCustomization::EActorType::GAMESETTING));
+	
 	//PropertyModule.RegisterCustomClassLayout("DanmakuActor", FOnGetDetailCustomizationInstance::CreateStatic(&MyCustomization::MakeInsance));
 
 	PropertyModule.NotifyCustomizationModuleChanged();
@@ -103,11 +95,9 @@ void FDanmakuModule::ShutdownModule()
 
 	FDanmakuCommands::Unregister();
 
-	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(DanmakuTabName);
+	FBulletEditorCommand::Unregister();
 
 	FCoreDelegates::OnPostEngineInit.RemoveAll(this);
-
-	
 
 	// Unregister all the asset types that we registered
 	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
@@ -126,71 +116,13 @@ void FDanmakuModule::ShutdownModule()
 	{
 		FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
 		PropertyModule.UnregisterCustomClassLayout(BulletEdGraphNodeCustomizationName);
-		PropertyModule.UnregisterCustomClassLayout(BulletActorCustomizationName);
+		PropertyModule.UnregisterCustomClassLayout(BulletEditorCustomizationName);
 	}
 
 	//unregister EdGraphNode
 	if (BulletGraphNodeFactory)
 	{
 		FEdGraphUtilities::UnregisterVisualNodeFactory(BulletGraphNodeFactory);
-	}
-
-
-}
-
-TSharedRef<SDockTab> FDanmakuModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
-{
-	FText WidgetText = FText::Format(
-		LOCTEXT("WindowWidgetText", "Add code to {0} in {1} to override this window's contents"),
-		FText::FromString(TEXT("FDanmakuModule::OnSpawnPluginTab")),
-		FText::FromString(TEXT("Danmaku.cpp"))
-		);
-
-	//여기서는 총알 및 패턴 리스트를 볼수 있는 에디터 생성.
-
-	return SNew(SDockTab)
-		.TabRole(ETabRole::MajorTab)
-		[
-			// Put your tab content here!
-				SNew(SUniformGridPanel)
-				+ SUniformGridPanel::Slot(0, 0)
-		.HAlign(HAlign_Fill)
-		.VAlign(VAlign_Fill)
-		[
-			SNew(SDanmakuEditorViewport)
-		]
-			
-		];
-}
-
-void FDanmakuModule::PluginButtonClicked()
-{
-	FGlobalTabmanager::Get()->TryInvokeTab(DanmakuTabName);
-}
-
-
-void FDanmakuModule::RegisterMenus()
-{
-	// Owner will be used for cleanup in call to UToolMenus::UnregisterOwner
-	FToolMenuOwnerScoped OwnerScoped(this);
-
-	{
-		UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Window");
-		{
-			FToolMenuSection& Section = Menu->FindOrAddSection("WindowLayout");
-			Section.AddMenuEntryWithCommandList(FDanmakuCommands::Get().OpenPluginWindow, PluginCommands);
-		}
-	}
-
-	{
-		UToolMenu* ToolbarMenu = UToolMenus::Get()->ExtendMenu("LevelEditor.LevelEditorToolBar");
-		{
-			FToolMenuSection& Section = ToolbarMenu->FindOrAddSection("Settings");
-			{
-				FToolMenuEntry& Entry = Section.AddEntry(FToolMenuEntry::InitToolBarButton(FDanmakuCommands::Get().OpenPluginWindow));
-				Entry.SetCommandList(PluginCommands);
-			}
-		}
 	}
 }
 

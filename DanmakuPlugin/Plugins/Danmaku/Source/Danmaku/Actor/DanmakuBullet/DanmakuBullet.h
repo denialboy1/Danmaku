@@ -3,15 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Bullet.generated.h"
+#include "DanmakuBullet.generated.h"
 
 UCLASS()
-class DANMAKU_API ABullet : public AActor
+class DANMAKU_API ADanmakuBullet : public AActor
 {
 	GENERATED_BODY()
 public:	
 	// Sets default values for this actor's properties
-	ABullet();
+	ADanmakuBullet();
 
 protected:
 	// Called when the game starts or when spawned

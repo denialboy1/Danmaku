@@ -18,6 +18,8 @@ public:
 	void StopSimulation();
 	void PauseSimulation();
 
+	void SetOrthoZoom(float InCameraDistance);
+	void UpdateWallSize();
 protected:
 	virtual TSharedRef<FEditorViewportClient> MakeEditorViewportClient();
 	virtual void OnFocusViewportToSelection() override;

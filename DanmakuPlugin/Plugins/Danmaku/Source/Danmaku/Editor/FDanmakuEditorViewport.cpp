@@ -2,7 +2,7 @@
 
 
 #include "FDanmakuEditorViewport.h"
-#include "Danmaku/Actor/Bullet/Bullet.h"
+#include "Danmaku/Actor/DanmakuBullet/DanmakuBullet.h"
 
 #include "AssetEditorModeManager.h"
 
