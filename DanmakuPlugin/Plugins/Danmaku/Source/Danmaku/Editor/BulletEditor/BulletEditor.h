@@ -8,6 +8,7 @@
 #include "Danmaku/Editor/BulletEditor/BulletAttributeList/BulletAttributeListTab.h"
 #include "Danmaku/Editor/BulletEditor/GraphEditor/SBulletGraphTab.h"
 #include "Editor/PropertyEditor/Public/PropertyEditorDelegates.h"
+#include "Sequencer/Public/ISequencer.h"
 
 class IDetailsView;
 class SDockableTab;
@@ -49,7 +50,7 @@ public:
 	static const FName BulletGraphEditorTabId;
 	static const FName BulletViewportTabId;
 	static const FName BulletDetailsTabId;
-
+	static const FName BulletSequencerTabID;
 private:
 	TSharedPtr<class SBulletViewportTab> BulletViewportTab;
 
@@ -63,7 +64,7 @@ private:
 	TSharedRef<SDockTab> SpawnBulletGraphEditorTab(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> SpawnBulletViewportTab(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> SpawnBulletDetailsTab(const FSpawnTabArgs& Args);
-
+	TSharedRef<SDockTab> SpawnBulletSequencerTab(const FSpawnTabArgs& Args);
 	
 #pragma endregion
 
@@ -78,5 +79,10 @@ private:
 public:
 	//다른 액터를 하나로 모여서 보여주고 싶기 때문에 Setting을 모아서 값만 넣어줌.
 	static class UBulletEditorSetting* GetBulletEditorSettingInstance();
+#pragma endregion
+
+#pragma region Sequencer
+	/** The sequencer instance viewing and editing the niagara sequence. */
+	TSharedPtr<ISequencer> Sequencer;
 #pragma endregion
 };

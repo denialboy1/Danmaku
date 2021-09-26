@@ -44,7 +44,9 @@ public class Danmaku : ModuleRules
 				"Slate",
 				"SlateCore",
 				"AssetTools",
-				"GraphEditor"
+				"GraphEditor",
+				"Sequencer",
+				"MovieScene"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
