@@ -64,7 +64,7 @@ private:
 	TSharedRef<SDockTab> SpawnBulletGraphEditorTab(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> SpawnBulletViewportTab(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> SpawnBulletDetailsTab(const FSpawnTabArgs& Args);
-	TSharedRef<SDockTab> SpawnBulletSequencerTab(const FSpawnTabArgs& Args);
+	//TSharedRef<SDockTab> SpawnBulletSequencerTab(const FSpawnTabArgs& Args);
 	
 #pragma endregion
 

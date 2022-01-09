@@ -226,9 +226,9 @@ void FBulletEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>& InT
 		.SetDisplayName(FText::FromName(BulletDetailsTabId))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
 
-	InTabManager->RegisterTabSpawner(BulletSequencerTabID, FOnSpawnTab::CreateSP(this, &FBulletEditor::SpawnBulletSequencerTab))
-		.SetDisplayName(FText::FromName(BulletSequencerTabID))
-		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
+	//InTabManager->RegisterTabSpawner(BulletSequencerTabID, FOnSpawnTab::CreateSP(this, &FBulletEditor::SpawnBulletSequencerTab))
+	//	.SetDisplayName(FText::FromName(BulletSequencerTabID))
+	//	.SetGroup(WorkspaceMenuCategory.ToSharedRef());
 }
 
 void FBulletEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager)
@@ -329,7 +329,7 @@ TSharedRef<SDockTab> FBulletEditor::SpawnBulletDetailsTab(const FSpawnTabArgs& A
 			]
 		];
 }
-
+/*
 TSharedRef<SDockTab> FBulletEditor::SpawnBulletSequencerTab(const FSpawnTabArgs& Args)
 {
 	UBulletEditorSequence* MovieSequence = NewObject<UBulletEditorSequence>(GetTransientPackage());
@@ -379,6 +379,7 @@ TSharedRef<SDockTab> FBulletEditor::SpawnBulletSequencerTab(const FSpawnTabArgs&
 
 	return SpawnedTab;
 }
+*/
 
 void FBulletEditor::SetDetailViewObject(UObject* DetailViewObject)
 {
