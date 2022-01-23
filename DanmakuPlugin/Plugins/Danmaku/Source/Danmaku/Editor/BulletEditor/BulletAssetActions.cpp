@@ -3,6 +3,7 @@
 
 #include "BulletAssetActions.h"
 #include "Danmaku/Actor/DanmakuBullet/DanmakuBullet.h"
+#include "Danmaku/Editor/BulletEditor/BulletFactory.h"
 #include "Danmaku/Editor/BulletEditor/BulletEditor.h"
 
 
@@ -23,7 +24,7 @@ FColor FBulletAssetActions::GetTypeColor() const
 
 UClass* FBulletAssetActions::GetSupportedClass() const
 {
-	return ADanmakuBullet::StaticClass();
+	return UBulletFactory::StaticClass();
 }
 
 uint32 FBulletAssetActions::GetCategories()

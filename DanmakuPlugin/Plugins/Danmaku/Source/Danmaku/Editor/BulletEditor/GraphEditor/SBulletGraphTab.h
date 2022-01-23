@@ -4,6 +4,7 @@
 
 #include "Widgets/SCompoundWidget.h"
 #include "GraphEditor.h"
+#include "Danmaku/Editor/BulletEditor/BulletFactory.h"
 #include "ContentBrowserDelegates.h"
 /**
  * 
@@ -12,6 +13,7 @@ class SBulletGraphTab : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SBulletGraphTab) {}
+	SLATE_ARGUMENT(UBulletFactory*, BulletFactory)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
@@ -20,6 +22,7 @@ public:
 
 	class UBulletEdGraph* GraphObj;
 
+	UBulletFactory* BulletFactory;
 public:
 	UBulletEdGraph* GetBulletGraph() {return GraphObj;}
 };

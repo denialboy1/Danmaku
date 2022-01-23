@@ -23,6 +23,10 @@ public:
 #pragma region Editor
 private:
 	static const FName BulletEditorName;
+
+	UPROPERTY()
+	UObject* EditingObject;
+
 	TArray<UObject*> EditingObjects;
 	static TSharedPtr<FBulletEditor> BulletEditor;
 private:

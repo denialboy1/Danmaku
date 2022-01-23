@@ -76,8 +76,13 @@ TSharedPtr<FBulletEditor> FBulletEditor::GetInstance()
 
 void FBulletEditor::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit)
 {
+	EditingObject = ObjectsToEdit[0];
+
 	EditingObjects = ObjectsToEdit;
+
 	GEditor->OnObjectsReplaced().AddSP(this, &FBulletEditor::OnObjectsReplaced);
+
+
 
 	//레이아웃 설정
 	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_BulletEditor_Layout_v4")
@@ -283,6 +288,8 @@ TSharedRef<SDockTab> FBulletEditor::SpawnBulletAttributeListTab(const FSpawnTabA
 TSharedRef<SDockTab> FBulletEditor::SpawnBulletGraphEditorTab(const FSpawnTabArgs& Args)
 {
 	check(Args.GetTabId() == BulletGraphEditorTabId);
+	
+	UBulletFactory* BulletFactory = Cast<UBulletFactory>(EditingObject);
 
 	return SNew(SDockTab)
 		[
@@ -295,9 +302,9 @@ TSharedRef<SDockTab> FBulletEditor::SpawnBulletGraphEditorTab(const FSpawnTabArg
 			]
 			+ SVerticalBox::Slot()
 			[
-				SNew(SBulletGraphTab)
+			SNew(SBulletGraphTab)
+			.BulletFactory(BulletFactory)
 			]
-			
 		];
 }
 
