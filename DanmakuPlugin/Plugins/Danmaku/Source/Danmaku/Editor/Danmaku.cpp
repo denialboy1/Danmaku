@@ -48,7 +48,6 @@ void FDanmakuModule::StartupModule()
 
 	PluginCommands = MakeShareable(new FUICommandList);
 	
-	
 
 	// register custom types:
 	{

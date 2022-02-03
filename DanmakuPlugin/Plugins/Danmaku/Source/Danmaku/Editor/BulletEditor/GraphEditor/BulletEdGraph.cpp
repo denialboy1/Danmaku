@@ -5,15 +5,18 @@
 #include "BulletEdGraphNode.h"
 #include "Danmaku/Editor/BulletEditor/GraphEditor/BulletEdGraphNode.h"
 
-void UBulletEdGraph::RebuildGraph()
-{
-	CreateNode(UBulletEdGraphNode::StaticClass());
-}
-
 UBulletEdGraphNode* UBulletEdGraph::CreateBulletAttributeNode()
 {
 	FGraphNodeCreator<UBulletEdGraphNode> NodeCreator(*this);
 	UBulletEdGraphNode* Result = NodeCreator.CreateNode();
+
+	if (IsValid(BulletFactory))
+	{
+		Result->SetNodeIndex(BulletFactory->GetDataCount());
+
+		BulletFactory->CreateData();
+	}
+
 	NodeCreator.Finalize();
 	return Result;
 }

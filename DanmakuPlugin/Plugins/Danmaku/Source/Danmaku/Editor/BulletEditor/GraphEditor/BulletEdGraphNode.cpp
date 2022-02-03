@@ -2,8 +2,17 @@
 
 
 #include "BulletEdGraphNode.h"
+#include "BulletEdGraph.h"
+
 
 void UBulletEdGraphNode::AddBulletAttribute(FName AttributeName)
 {
-	BulletAttributeList.Add(AttributeName);
+	UBulletEdGraph* BulletEdGraph = Cast<UBulletEdGraph>(GetGraph());
+
+	if (IsValid(BulletEdGraph))
+	{
+		BulletEdGraph->SaveTempAttribute(NodeIndex, AttributeName);
+
+		BulletAttributeList.Add(AttributeName);
+	}
 }

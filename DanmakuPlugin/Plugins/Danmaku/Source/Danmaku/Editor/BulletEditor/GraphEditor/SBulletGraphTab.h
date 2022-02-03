@@ -19,10 +19,4 @@ public:
 	void Construct(const FArguments& InArgs);
 
 	TSharedPtr<SGraphEditor> GraphEditorPtr;
-
-	class UBulletEdGraph* GraphObj;
-
-	UBulletFactory* BulletFactory;
-public:
-	UBulletEdGraph* GetBulletGraph() {return GraphObj;}
 };

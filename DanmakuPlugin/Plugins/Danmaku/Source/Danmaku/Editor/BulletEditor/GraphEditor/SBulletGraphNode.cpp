@@ -9,9 +9,9 @@
 #include "Widgets/Input/SButton.h"
 #include "SNodePanel.h"
 
-void SBulletGraphNode::Construct(const FArguments& InArgs, UBulletEdGraphNode* InNode)
+void SBulletGraphNode::Construct(const FArguments& InArgs)
 {
-	GraphNode = InNode;
+	GraphNode = InArgs._BulletEdGraphNode;
 	UpdateGraphNode();
 }
 
@@ -59,11 +59,13 @@ void SBulletGraphNode::AddBulletAttribute(FName AttributeName)
 	{
 		BulletEdGraphNode->AddBulletAttribute(AttributeName);
 	}
-	
-	if (BulletStackEntry)
-	{
-		BulletStackEntry->AddBulletAttribute(AttributeName);
-	}
+
+	UpdateGraphNode();
+
+	//if (BulletStackEntry)
+	//{
+	//	BulletStackEntry->AddBulletAttribute(AttributeName);
+	//}
 	
 }
 

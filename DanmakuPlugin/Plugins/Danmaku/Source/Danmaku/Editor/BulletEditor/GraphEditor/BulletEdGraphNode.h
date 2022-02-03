@@ -12,19 +12,6 @@
  * 
  */
 
-class FBulletGraphNodeFactory : public FGraphPanelNodeFactory
-{
-	virtual TSharedPtr<class SGraphNode> CreateNode(UEdGraphNode* Node) const override
-	{
-		if (UBulletEdGraphNode* BulletEdGraphNode = Cast<UBulletEdGraphNode>(Node))
-		{
-			return SNew(SBulletGraphNode, BulletEdGraphNode);
-		}
-
-		return nullptr;
-	}
-};
-
 UCLASS()
 class DANMAKU_API UBulletEdGraphNode : public UEdGraphNode
 {
@@ -33,9 +20,28 @@ class DANMAKU_API UBulletEdGraphNode : public UEdGraphNode
 public:
 	void AddBulletAttribute(FName AttributeName);
 	TArray<FName> GetBulletAttributeList() const { return BulletAttributeList; }
+
+	void SetNodeIndex(int32 InIndex) { NodeIndex = InIndex; }
 private:
 	//여기에 리스트 정보가 들어가야함
 	UPROPERTY(EditAnywhere, Category = "BulletAttributeList")
-	TArray<FName> BulletAttributeList;
+		TArray<FName> BulletAttributeList;
 
+	int32 NodeIndex;
 };
+
+
+class FBulletGraphNodeFactory : public FGraphPanelNodeFactory
+{
+	virtual TSharedPtr<class SGraphNode> CreateNode(UEdGraphNode* Node) const override
+	{
+		if (UBulletEdGraphNode* BulletEdGraphNode = Cast<UBulletEdGraphNode>(Node))
+		{
+			return SNew(SBulletGraphNode)
+				.BulletEdGraphNode(BulletEdGraphNode);
+		}
+		
+		return nullptr;
+	}
+};
+

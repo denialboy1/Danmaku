@@ -5,15 +5,30 @@
 #include "CoreMinimal.h"
 #include "EdGraph/EdGraph.h"
 #include "BulletStackEntry.h"
+#include "Danmaku/Editor/BulletEditor/BulletFactory.h"
+#include "BulletEdGraphNode.h"
 #include "BulletEdGraph.generated.h"
+
+class UBulletFactory;
 
 UCLASS()
 class DANMAKU_API UBulletEdGraph : public UEdGraph
 {
 	GENERATED_BODY()
 	
-public:
-	void RebuildGraph();
+private:
+	UBulletFactory* BulletFactory;
 
+public:
+	void SetBulletFactory(UBulletFactory* InBulletFactory) { BulletFactory = InBulletFactory; }
+	UBulletFactory* GetBulletFactory() { return BulletFactory; }
 	class UBulletEdGraphNode* CreateBulletAttributeNode();
+
+	void SaveTempAttribute(int32 InIndex, FName InBulletAttribute)
+	{
+		if (BulletFactory)
+		{
+			BulletFactory->AddBulletAttribute(InIndex, InBulletAttribute);
+		}
+	}
 };

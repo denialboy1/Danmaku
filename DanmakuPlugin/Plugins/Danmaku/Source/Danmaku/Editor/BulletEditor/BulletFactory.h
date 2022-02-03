@@ -10,17 +10,47 @@
 /**
  * 
  */
-UCLASS()
+USTRUCT()
+struct FBulletEditorBulletData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<FName> BulletAttributeList;
+};
+
+
+UCLASS(EditInlineNew)
 class DANMAKU_API UBulletFactory : public UObject
 {
 	GENERATED_BODY()
 
 private:
-	TArray<FBulletEditorBulletAttribute> BulletAttributeList;
 
-
+	UPROPERTY()
+	TArray<FBulletEditorBulletData> BulletDataArray;
 public:
-	void AddAttribute(FBulletEditorBulletAttribute InBulletAttribute) { BulletAttributeList.Add(InBulletAttribute); }
-	TArray<FBulletEditorBulletAttribute> GetBulletAttributeList() { return BulletAttributeList; }
+	void CreateData(FBulletEditorBulletData InBulletEditorBulletData = FBulletEditorBulletData())
+	{
+		BulletDataArray.Add(InBulletEditorBulletData);
+	}
+
+	int32 GetDataCount() { return BulletDataArray.Num(); }
+
+	void AddBulletAttribute(int32 InIndex, FName InBulletAttributeName) { 
+		if (BulletDataArray.IsValidIndex(InIndex))
+		{
+			BulletDataArray[InIndex].BulletAttributeList.Add(InBulletAttributeName);
+		}
+	}
+
+	FBulletEditorBulletData GetBulletAttributeList(int32 InIndex) {
+		if (BulletDataArray.IsValidIndex(InIndex))
+		{
+			return BulletDataArray[InIndex];
+		}
+		
+		return FBulletEditorBulletData();
+	}
 
 };

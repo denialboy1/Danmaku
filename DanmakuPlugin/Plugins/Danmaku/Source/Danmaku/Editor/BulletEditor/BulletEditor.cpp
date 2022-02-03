@@ -290,6 +290,14 @@ TSharedRef<SDockTab> FBulletEditor::SpawnBulletGraphEditorTab(const FSpawnTabArg
 	check(Args.GetTabId() == BulletGraphEditorTabId);
 	
 	UBulletFactory* BulletFactory = Cast<UBulletFactory>(EditingObject);
+	//
+	//FBulletEditorBulletAttribute BulletAttribute;
+	//BulletAttribute.Name = TEXT("Direction");
+	//BulletFactory->AddAttribute(BulletAttribute);
+	//
+	//FBulletEditorBulletAttribute BulletAttribute2;
+	//BulletAttribute2.Name = TEXT("Angle");
+	//BulletFactory->AddAttribute(BulletAttribute2);
 
 	return SNew(SDockTab)
 		[
