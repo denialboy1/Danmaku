@@ -14,15 +14,19 @@ void SBulletStackEntry::Construct(const FArguments& Args)
 	this->ListView->RequestListRefresh();
 }
 
-void SBulletStackEntry::AddBulletAttribute(FName AttributeName)
+void SBulletStackEntry::RemoveListViewItem(FGuid InGuid)
 {
-	FBulletStackEntryPtr BulletAttribute = FBulletStackEntry::Make();
-	BulletAttribute->BulletAttribute = AttributeName.ToString();
-	BulletStackEntryList.Add(BulletAttribute);
+	for (int32 Index = 0; Index < BulletStackEntryList.Num(); Index++)
+	{
+		if (BulletStackEntryList[Index]->Guid == InGuid)
+		{
+			BulletStackEntryList.RemoveAt(Index);
+			break;
+		}
+	}
 
-	this->ListView->RequestListRefresh();
+	ListView->RequestListRefresh();
 }
-
 
 TSharedRef<SWidget> SBulletStackEntry::CreateListView()
 {
@@ -38,7 +42,7 @@ TSharedRef<ITableRow> SBulletStackEntry::GenerateListRow(FBulletStackEntryPtr Bu
 	return SNew(STableRow<FBulletStackEntryPtr>, OwnerTable)
 		[
 			SNew(STextBlock)
-			.Text(FText::FromString(BulletStackEntry->BulletAttribute))
+			.Text(FText::FromName(BulletStackEntry->AttributeName))
 		];
 }
 

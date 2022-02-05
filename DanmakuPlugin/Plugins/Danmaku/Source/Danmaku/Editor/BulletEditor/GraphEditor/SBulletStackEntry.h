@@ -23,7 +23,10 @@ public:
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& Args);
-	void AddBulletAttribute(FName AttributeName);
+public:
+	TSharedPtr<SBulletStackEntryListView> GetListView() {return ListView;}
+
+	void RemoveListViewItem(FGuid InGuid);
 private:
 	//ListView를 생성하는 함수
 	TSharedRef<SWidget> CreateListView();

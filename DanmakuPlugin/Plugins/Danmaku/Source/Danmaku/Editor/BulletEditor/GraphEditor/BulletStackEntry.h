@@ -16,5 +16,6 @@ public:
 		return MakeShareable(new FBulletStackEntry());
 	}
 public:
-	FString BulletAttribute;
+	FGuid Guid;
+	FName AttributeName;
 };

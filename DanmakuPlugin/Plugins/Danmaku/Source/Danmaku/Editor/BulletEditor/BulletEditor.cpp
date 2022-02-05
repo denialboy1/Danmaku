@@ -210,7 +210,10 @@ void FBulletEditor::SaveAsset_Execute()
 			UBulletEdGraphNode* BulletNode = Cast<UBulletEdGraphNode>(Node);
 
 			FBulletEditorBulletData BulletData;
-			BulletData.BulletAttributeList = BulletNode->GetBulletAttributeList();
+			for (auto BulletAttribute : BulletNode->GetBulletAttributeList())
+			{
+				BulletData.BulletAttributeList.Add(BulletAttribute.AttributeName);
+			}
 
 			BulletDataArray.Add(BulletData);
 		}

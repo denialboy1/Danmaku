@@ -18,6 +18,8 @@ public:
 
 	virtual FReply OnDrop(const FGeometry& MyGeometry, const FDragDropEvent& DragDropEvent) override;
 	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual FReply OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent) override;
+
 	/** Create the inner node content area, including the left/right pin boxes */
 	virtual TSharedRef<SWidget> CreateNodeContentArea() override;
 

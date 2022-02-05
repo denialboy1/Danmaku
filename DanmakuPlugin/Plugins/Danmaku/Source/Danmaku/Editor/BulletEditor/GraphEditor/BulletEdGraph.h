@@ -17,12 +17,4 @@ class DANMAKU_API UBulletEdGraph : public UEdGraph
 	GENERATED_BODY()
 public:
 	class UBulletEdGraphNode* CreateBulletAttributeNode();
-
-	void SaveTempAttribute(int32 InIndex, FName InBulletAttribute)
-	{
-		//if (BulletFactory)
-		//{
-		//	BulletFactory->AddBulletAttribute(InIndex, InBulletAttribute);
-		//}
-	}
 };

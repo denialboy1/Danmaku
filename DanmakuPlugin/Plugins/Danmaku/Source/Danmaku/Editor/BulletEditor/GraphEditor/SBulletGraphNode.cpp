@@ -35,17 +35,45 @@ FReply SBulletGraphNode::OnMouseButtonDown(const FGeometry& MyGeometry, const FP
 	return SGraphNode::OnMouseButtonDown(MyGeometry, MouseEvent);
 }
 
+FReply SBulletGraphNode::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (InKeyEvent.GetKey() == EKeys::Delete)
+	{
+		if (BulletStackEntry)
+		{
+			UBulletEdGraphNode* BulletGraphNode = Cast<UBulletEdGraphNode>(GraphNode);
+			if (BulletGraphNode)
+			{
+				for (auto SelectedItem : BulletStackEntry->GetListView()->GetSelectedItems())
+				{
+					//데이터 삭제
+					BulletGraphNode->RemoveBulletAttribute(SelectedItem->Guid);
+
+					//위젯 리스트 삭제
+					BulletStackEntry->RemoveListViewItem(SelectedItem->Guid);
+				}
+			}
+		}
+
+		return FReply::Handled();
+	}
+
+	return FReply::Unhandled();
+}
+
 TSharedRef<SWidget> SBulletGraphNode::CreateNodeContentArea()
 {
 	UBulletEdGraphNode* BulletEdGraphNode = Cast<UBulletEdGraphNode>(GraphNode);
 
 	//원본 데이터를 StackNodeEntry 형태로 변경
 	TArray<FBulletStackEntryPtr> BulletStackEntryList;
-	for (auto BulletAttributeName : BulletEdGraphNode->GetBulletAttributeList())
+	for (auto BulletAttribute : BulletEdGraphNode->GetBulletAttributeList())
 	{
-		FBulletStackEntryPtr BulletAttribute = FBulletStackEntry::Make();
-		BulletAttribute->BulletAttribute = BulletAttributeName.ToString();
-		BulletStackEntryList.Add(BulletAttribute);
+		FBulletStackEntryPtr BulletStackEntryPtr = FBulletStackEntry::Make();
+		BulletStackEntryPtr->AttributeName = BulletAttribute.AttributeName;
+		BulletStackEntryPtr->Guid = BulletAttribute.Guid;
+
+		BulletStackEntryList.Add(BulletStackEntryPtr);
 	}
 
 	return SAssignNew(BulletStackEntry, SBulletStackEntry)

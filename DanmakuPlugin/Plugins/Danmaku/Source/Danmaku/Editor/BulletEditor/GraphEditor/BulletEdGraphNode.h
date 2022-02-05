@@ -11,6 +11,16 @@
 /**
  * 
  */
+USTRUCT()
+struct FBulletAttributeInfo
+{
+	GENERATED_BODY()
+
+	FGuid Guid;
+
+	UPROPERTY()
+	FName AttributeName;
+};
 
 UCLASS()
 class DANMAKU_API UBulletEdGraphNode : public UEdGraphNode
@@ -18,15 +28,32 @@ class DANMAKU_API UBulletEdGraphNode : public UEdGraphNode
 	GENERATED_BODY()
 
 public:
-	void AddBulletAttribute(FName InAttributeName) { BulletAttributeList.Add(InAttributeName); }
-	TArray<FName> GetBulletAttributeList() const { return BulletAttributeList; }
+	
+	void AddBulletAttribute(FName InAttributeName) { 
+		FBulletAttributeInfo BulletAttributeInfo;
+		BulletAttributeInfo.AttributeName = InAttributeName;
+		BulletAttributeInfo.Guid = FGuid::NewGuid();
 
+		BulletAttributeList.Add(BulletAttributeInfo);
+	}
+
+	TArray<FBulletAttributeInfo> GetBulletAttributeList() const { return BulletAttributeList; }
+	void RemoveBulletAttribute(FGuid InGuid) { 
+		for (int32 Index = 0; Index < BulletAttributeList.Num(); Index++)
+		{
+			if (BulletAttributeList[Index].Guid == InGuid)
+			{
+				BulletAttributeList.RemoveAt(Index);
+				break;
+			}
+		}
+	}
 	void SetNodeIndex(int32 InIndex) { NodeIndex = InIndex; }
 	int32 GetNodeIndex() { return NodeIndex; }
 private:
 	//여기에 리스트 정보가 들어가야함
 	UPROPERTY(EditAnywhere, Category = "BulletAttributeList")
-		TArray<FName> BulletAttributeList;
+	TArray<FBulletAttributeInfo> BulletAttributeList;
 
 	int32 NodeIndex;
 };
