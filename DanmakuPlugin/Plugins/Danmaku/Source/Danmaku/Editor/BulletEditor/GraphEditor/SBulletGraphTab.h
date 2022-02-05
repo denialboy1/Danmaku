@@ -13,10 +13,14 @@ class SBulletGraphTab : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SBulletGraphTab) {}
-	SLATE_ARGUMENT(UBulletFactory*, BulletFactory)
+	SLATE_ARGUMENT(TArray<FBulletEditorBulletData>, BulletDataArray)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
+
+	class UBulletEdGraph* GetBulletEdGraph() { return BulletEdGraph; }
+private:
+	class UBulletEdGraph* BulletEdGraph;
 
 	TSharedPtr<SGraphEditor> GraphEditorPtr;
 };

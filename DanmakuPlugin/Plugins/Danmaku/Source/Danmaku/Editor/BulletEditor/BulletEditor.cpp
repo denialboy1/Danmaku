@@ -199,6 +199,33 @@ void FBulletEditor::OnObjectsReplaced(const TMap<UObject*, UObject*>& Replacemen
 	}
 }
 
+void FBulletEditor::SaveAsset_Execute()
+{
+	//여기서 그래프 관련 데이터 저장.
+	if (BulletGraphTab && EditingObject)
+	{
+		TArray<FBulletEditorBulletData> BulletDataArray;
+		for (auto Node : BulletGraphTab->GetBulletEdGraph()->Nodes)
+		{
+			UBulletEdGraphNode* BulletNode = Cast<UBulletEdGraphNode>(Node);
+
+			FBulletEditorBulletData BulletData;
+			BulletData.BulletAttributeList = BulletNode->GetBulletAttributeList();
+
+			BulletDataArray.Add(BulletData);
+		}
+
+		UBulletFactory* BulletFactory = Cast<UBulletFactory>(EditingObject);
+
+		if (IsValid(BulletFactory))
+		{
+			BulletFactory->SetBulletDataArray(BulletDataArray);
+		}
+	}
+
+	FAssetEditorToolkit::SaveAsset_Execute();
+}
+
 TSharedPtr<class SBulletViewportTab> FBulletEditor::GetBulletViewportTab()
 {
 	if (BulletViewportTab == nullptr)
@@ -308,10 +335,10 @@ TSharedRef<SDockTab> FBulletEditor::SpawnBulletGraphEditorTab(const FSpawnTabArg
 				SNew(STextBlock)
 				.Text(FText::FromString("ActorName"))
 			]
-			+ SVerticalBox::Slot()
-			[
-			SNew(SBulletGraphTab)
-			.BulletFactory(BulletFactory)
+	+ SVerticalBox::Slot()
+		[
+			SAssignNew(BulletGraphTab, SBulletGraphTab)
+			.BulletDataArray(BulletFactory->GetBulletDataArray())
 			]
 		];
 }

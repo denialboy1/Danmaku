@@ -15,20 +15,14 @@ UCLASS()
 class DANMAKU_API UBulletEdGraph : public UEdGraph
 {
 	GENERATED_BODY()
-	
-private:
-	UBulletFactory* BulletFactory;
-
 public:
-	void SetBulletFactory(UBulletFactory* InBulletFactory) { BulletFactory = InBulletFactory; }
-	UBulletFactory* GetBulletFactory() { return BulletFactory; }
 	class UBulletEdGraphNode* CreateBulletAttributeNode();
 
 	void SaveTempAttribute(int32 InIndex, FName InBulletAttribute)
 	{
-		if (BulletFactory)
-		{
-			BulletFactory->AddBulletAttribute(InIndex, InBulletAttribute);
-		}
+		//if (BulletFactory)
+		//{
+		//	BulletFactory->AddBulletAttribute(InIndex, InBulletAttribute);
+		//}
 	}
 };

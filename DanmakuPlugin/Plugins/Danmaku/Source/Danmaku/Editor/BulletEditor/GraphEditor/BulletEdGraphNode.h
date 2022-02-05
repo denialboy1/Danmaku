@@ -18,10 +18,11 @@ class DANMAKU_API UBulletEdGraphNode : public UEdGraphNode
 	GENERATED_BODY()
 
 public:
-	void AddBulletAttribute(FName AttributeName);
+	void AddBulletAttribute(FName InAttributeName) { BulletAttributeList.Add(InAttributeName); }
 	TArray<FName> GetBulletAttributeList() const { return BulletAttributeList; }
 
 	void SetNodeIndex(int32 InIndex) { NodeIndex = InIndex; }
+	int32 GetNodeIndex() { return NodeIndex; }
 private:
 	//여기에 리스트 정보가 들어가야함
 	UPROPERTY(EditAnywhere, Category = "BulletAttributeList")
@@ -37,6 +38,7 @@ class FBulletGraphNodeFactory : public FGraphPanelNodeFactory
 	{
 		if (UBulletEdGraphNode* BulletEdGraphNode = Cast<UBulletEdGraphNode>(Node))
 		{
+			BulletEdGraphNode->GetNodeIndex();
 			return SNew(SBulletGraphNode)
 				.BulletEdGraphNode(BulletEdGraphNode);
 		}

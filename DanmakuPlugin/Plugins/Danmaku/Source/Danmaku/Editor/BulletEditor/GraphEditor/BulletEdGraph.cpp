@@ -10,12 +10,12 @@ UBulletEdGraphNode* UBulletEdGraph::CreateBulletAttributeNode()
 	FGraphNodeCreator<UBulletEdGraphNode> NodeCreator(*this);
 	UBulletEdGraphNode* Result = NodeCreator.CreateNode();
 
-	if (IsValid(BulletFactory))
-	{
-		Result->SetNodeIndex(BulletFactory->GetDataCount());
-
-		BulletFactory->CreateData();
-	}
+	//if (IsValid(BulletFactory))
+	//{
+	//	Result->SetNodeIndex(BulletFactory->GetDataCount());
+	//
+	//	BulletFactory->CreateData();
+	//}
 
 	NodeCreator.Finalize();
 	return Result;

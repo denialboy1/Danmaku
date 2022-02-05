@@ -35,6 +35,9 @@ private:
 	void ShowBulletEditorSetting();
 	/** Called when objects need to be swapped out for new versions, like after a blueprint recompile. */
 	void OnObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap);
+	/** Called when "Save" is clicked for this asset */
+protected:
+	virtual void SaveAsset_Execute() override;
 public:
 	static TSharedRef<FBulletEditor> CreateEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost >& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit);
 	static TSharedPtr<FBulletEditor> GetInstance();
@@ -57,7 +60,8 @@ public:
 	static const FName BulletSequencerTabID;
 private:
 	TSharedPtr<class SBulletViewportTab> BulletViewportTab;
-
+	TSharedPtr<class SBulletGraphTab> BulletGraphTab;
+	
 public:
 	TSharedPtr<class SBulletViewportTab> GetBulletViewportTab();
 private:

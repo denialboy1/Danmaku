@@ -25,32 +25,12 @@ class DANMAKU_API UBulletFactory : public UObject
 {
 	GENERATED_BODY()
 
-private:
+public:
+	TArray<FBulletEditorBulletData> GetBulletDataArray() { return BulletDataArray; }
+	void SetBulletDataArray(TArray<FBulletEditorBulletData>& InBulletDataArray) { BulletDataArray = InBulletDataArray; }
 
+private:
 	UPROPERTY()
 	TArray<FBulletEditorBulletData> BulletDataArray;
-public:
-	void CreateData(FBulletEditorBulletData InBulletEditorBulletData = FBulletEditorBulletData())
-	{
-		BulletDataArray.Add(InBulletEditorBulletData);
-	}
-
-	int32 GetDataCount() { return BulletDataArray.Num(); }
-
-	void AddBulletAttribute(int32 InIndex, FName InBulletAttributeName) { 
-		if (BulletDataArray.IsValidIndex(InIndex))
-		{
-			BulletDataArray[InIndex].BulletAttributeList.Add(InBulletAttributeName);
-		}
-	}
-
-	FBulletEditorBulletData GetBulletAttributeList(int32 InIndex) {
-		if (BulletDataArray.IsValidIndex(InIndex))
-		{
-			return BulletDataArray[InIndex];
-		}
-		
-		return FBulletEditorBulletData();
-	}
 
 };
