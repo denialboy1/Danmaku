@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "Danmaku/Editor/BulletEditor/GraphEditor/SBulletGraphTab.h"
+#include "Danmaku/Editor/BulletEditor/BulletEditorDefine.h"
 
 #include "Widgets/SWidget.h"
 #include "Widgets/SCompoundWidget.h"
@@ -13,8 +14,7 @@
 #include "Widgets/Views/STableViewBase.h"
 #include "Styling/SlateBrush.h"
 
-using FBulletAttribute = FName;
-using FBulletAttributePtr = TSharedPtr<FBulletAttribute>;
+using FBulletAttributePtr = TSharedPtr<FBulletAttributeInfo>;
 using FBulletAttributePtrList = TArray<FBulletAttributePtr>;
 using SBulletAttributePtrListView = SListView<FBulletAttributePtr>;
 
@@ -50,7 +50,7 @@ private:
 	/** Brush resource that represents a button when it is pressed */
 	const FSlateBrush* PressedImage;
 
-	FBulletAttribute BulletAttribute;
+	FBulletAttributeInfo BulletAttributeInfo;
 };
 
 class DANMAKU_API SBulletAttributeListTab : public SCompoundWidget
@@ -58,9 +58,9 @@ class DANMAKU_API SBulletAttributeListTab : public SCompoundWidget
 public:
 	SLATE_BEGIN_ARGS(SBulletAttributeListTab) {}
 
-	SLATE_ARGUMENT(FBulletAttributePtrList, BulletAttributePtrList)
+	SLATE_ARGUMENT(FBulletAttributePtrList, MoveAttributePtrList)
 
-	SLATE_ARGUMENT(FBulletAttributePtrList, BulletMovementAttributePtrList)
+	SLATE_ARGUMENT(FBulletAttributePtrList, SpecialAttributePtrList)
 
 	SLATE_END_ARGS()
 
@@ -75,12 +75,12 @@ private:
 	
 private:
 	//SAssignNew때 보관할 리스트 변수
-	TSharedPtr<SBulletAttributePtrListView> BulletAttributePtrListView;
+	TSharedPtr<SBulletAttributePtrListView> MoveAttributePtrListView;
 
-	TSharedPtr<SBulletAttributePtrListView> BulletMovementAttributePtrListView;
+	TSharedPtr<SBulletAttributePtrListView> SpecialAttributePtrListView;
 
 	// ListView에 전달될 데이터 목록
-	FBulletAttributePtrList BulletAttributePtrList;
+	FBulletAttributePtrList MoveAttributePtrList;
 
-	FBulletAttributePtrList BulletMovementAttributePtrList;
+	FBulletAttributePtrList SpecialAttributePtrList;
 };

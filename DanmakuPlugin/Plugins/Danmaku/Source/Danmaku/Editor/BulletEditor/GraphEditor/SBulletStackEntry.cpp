@@ -5,36 +5,75 @@
 
 void SBulletStackEntry::Construct(const FArguments& Args)
 {
-	BulletStackEntryList = Args._BulletAttributeList;
+	MoveAttributeList = Args._MoveAttributeList;
+	SpecialAttributeList = Args._SpecialAttributeList;
 	this->ChildSlot
 		[
 			CreateListView()
 		];
 
-	this->ListView->RequestListRefresh();
+	MoveAttributeListView->RequestListRefresh();
+	SpecialAttributeListView->RequestListRefresh();
 }
 
 void SBulletStackEntry::RemoveListViewItem(FGuid InGuid)
 {
-	for (int32 Index = 0; Index < BulletStackEntryList.Num(); Index++)
+	for (int32 Index = 0; Index < MoveAttributeList.Num(); Index++)
 	{
-		if (BulletStackEntryList[Index]->Guid == InGuid)
+		if (MoveAttributeList[Index]->Guid == InGuid)
 		{
-			BulletStackEntryList.RemoveAt(Index);
-			break;
+			MoveAttributeList.RemoveAt(Index);
+
+			MoveAttributeListView->RequestListRefresh();
+			return;
 		}
 	}
 
-	ListView->RequestListRefresh();
+	for (int32 Index = 0; Index < SpecialAttributeList.Num(); Index++)
+	{
+		if (SpecialAttributeList[Index]->Guid == InGuid)
+		{
+			SpecialAttributeList.RemoveAt(Index);
+			
+			SpecialAttributeListView->RequestListRefresh();
+			return;
+		}
+	}
+
+	
 }
 
 TSharedRef<SWidget> SBulletStackEntry::CreateListView()
 {
-	return SAssignNew(this->ListView, SBulletStackEntryListView)
-		.OnGenerateRow(this, &SBulletStackEntry::GenerateListRow)
-		.ListItemsSource(&this->BulletStackEntryList)
+	return SNew(SVerticalBox)
+		
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SAssignNew(this->MoveAttributeListView, SBulletStackEntryListView)
+			.OnGenerateRow(this, &SBulletStackEntry::GenerateListRow)
+		.ListItemsSource(&this->MoveAttributeList)
 		.ItemHeight(24)
-		.Visibility(EVisibility::Visible);
+		.Visibility(EVisibility::Visible)
+		.HeaderRow(
+			SNew(SHeaderRow)
+			+ SHeaderRow::Column("MovementAttribute")
+		)
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SAssignNew(this->SpecialAttributeListView, SBulletStackEntryListView)
+			.OnGenerateRow(this, &SBulletStackEntry::GenerateListRow)
+		.ListItemsSource(&this->SpecialAttributeList)
+		.ItemHeight(24)
+		.Visibility(EVisibility::Visible)
+		.HeaderRow(
+			SNew(SHeaderRow)
+			+ SHeaderRow::Column("SpecialAttribute")
+		)
+		];
+		
 }
 
 TSharedRef<ITableRow> SBulletStackEntry::GenerateListRow(FBulletStackEntryPtr BulletStackEntry, const TSharedRef<STableViewBase>& OwnerTable)
@@ -43,6 +82,8 @@ TSharedRef<ITableRow> SBulletStackEntry::GenerateListRow(FBulletStackEntryPtr Bu
 		[
 			SNew(STextBlock)
 			.Text(FText::FromName(BulletStackEntry->AttributeName))
+			.Margin(10.0f)
+			.AutoWrapText(true)
 		];
 }
 

@@ -23,7 +23,8 @@ public:
 	/** Create the inner node content area, including the left/right pin boxes */
 	virtual TSharedRef<SWidget> CreateNodeContentArea() override;
 
-	void AddBulletAttribute(FName AttributeName);
+	void AddBulletMoveAttribute(FName AttributeName);
+	void AddBulletSpecialAttribute(FName AttributeName);
 private:
 	TSharedPtr<SBulletStackEntry> BulletStackEntry;
 };

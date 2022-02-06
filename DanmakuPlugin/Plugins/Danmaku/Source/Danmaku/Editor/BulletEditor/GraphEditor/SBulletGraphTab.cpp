@@ -22,9 +22,14 @@ void SBulletGraphTab::Construct(const FArguments& Args)
 			{
 				BulletEdGraphNode->SetNodeIndex(Index);
 
-				for (auto BulletAttributeName : Args._BulletDataArray[Index].BulletAttributeList)
+				for (auto BulletAttributeName : Args._BulletDataArray[Index].MoveAttributeList)
 				{
-					BulletEdGraphNode->AddBulletAttribute(BulletAttributeName);
+					BulletEdGraphNode->AddMoveBulletAttribute(BulletAttributeName);
+				}
+
+				for (auto BulletAttributeName : Args._BulletDataArray[Index].SpecialAttributeList)
+				{
+					BulletEdGraphNode->AddSpecialBulletAttribute(BulletAttributeName);
 				}
 			}
 		}

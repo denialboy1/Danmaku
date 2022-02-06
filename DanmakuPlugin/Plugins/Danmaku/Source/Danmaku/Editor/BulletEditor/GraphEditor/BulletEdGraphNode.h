@@ -20,33 +20,48 @@ class DANMAKU_API UBulletEdGraphNode : public UEdGraphNode
 	GENERATED_BODY()
 
 public:
-	
-	void AddBulletAttribute(FName InAttributeName) { 
+	void AddMoveBulletAttribute(FName InAttributeName) { 
 		FBulletAttributeInfo BulletAttributeInfo;
 		BulletAttributeInfo.AttributeName = InAttributeName;
 		BulletAttributeInfo.Guid = FGuid::NewGuid();
 
-		BulletAttributeList.Add(BulletAttributeInfo);
+		MoveAttributeList.Add(BulletAttributeInfo);
 	}
 
-	TArray<FBulletAttributeInfo> GetBulletAttributeList() const { return BulletAttributeList; }
+	void AddSpecialBulletAttribute(FName InAttributeName) {
+		FBulletAttributeInfo BulletAttributeInfo;
+		BulletAttributeInfo.AttributeName = InAttributeName;
+		BulletAttributeInfo.Guid = FGuid::NewGuid();
+
+		SpecialAttributeList.Add(BulletAttributeInfo);
+	}
+
+	TArray<FBulletAttributeInfo> GetMoveAttributeList() const { return MoveAttributeList; }
+	TArray<FBulletAttributeInfo> GetSpecialAttributeList() const { return SpecialAttributeList; }
+
 	void RemoveBulletAttribute(FGuid InGuid) { 
-		for (int32 Index = 0; Index < BulletAttributeList.Num(); Index++)
+		for (int32 Index = 0; Index < MoveAttributeList.Num(); Index++)
 		{
-			if (BulletAttributeList[Index].Guid == InGuid)
+			if (MoveAttributeList[Index].Guid == InGuid)
 			{
-				BulletAttributeList.RemoveAt(Index);
-				break;
+				MoveAttributeList.RemoveAt(Index);
+				return;
+			}
+		}
+
+		for (int32 Index = 0; Index < SpecialAttributeList.Num(); Index++)
+		{
+			if (SpecialAttributeList[Index].Guid == InGuid)
+			{
+				SpecialAttributeList.RemoveAt(Index);
+				return;
 			}
 		}
 	}
+
 	void SetNodeIndex(int32 InIndex) { NodeIndex = InIndex; }
 	int32 GetNodeIndex() { return NodeIndex; }
 private:
-	//여기에 리스트 정보가 들어가야함
-	UPROPERTY(EditAnywhere, Category = "MoveAttributeList")
-		TArray<FBulletAttributeInfo> BulletAttributeList;
-
 	UPROPERTY(EditAnywhere, Category = "MoveAttributeList")
 	TArray<FBulletAttributeInfo> MoveAttributeList;
 

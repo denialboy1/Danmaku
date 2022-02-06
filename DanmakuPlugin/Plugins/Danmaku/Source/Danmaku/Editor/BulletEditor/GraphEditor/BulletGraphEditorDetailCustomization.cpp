@@ -19,12 +19,8 @@ void BulletGraphEditorDetailCustomization::CustomizeDetails(IDetailLayoutBuilder
 
 	if (DetailBuilder.GetBaseClass() == UBulletEdGraphNode::StaticClass())
 	{
-		DetailBuilder.HideCategory(TEXT("BulletAttributeList"));
-
-		//커스텀해서 보여주고 싶은 방식을 커스텀하고 싶을 때 여기다 추가.
-		IDetailCategoryBuilder& DetailCategoryBuilder = DetailBuilder.EditCategory(TEXT("AttributeName"), FText::FromString(TEXT("Attribute")));
-		
-
+		DetailBuilder.HideCategory(TEXT("MoveAttributeList"));
+		DetailBuilder.HideCategory(TEXT("SpecialAttributeList"));
 		TArray<TWeakObjectPtr<UObject>> ObjectArray;
 		DetailBuilder.GetObjectsBeingCustomized(ObjectArray);
 
@@ -36,14 +32,26 @@ void BulletGraphEditorDetailCustomization::CustomizeDetails(IDetailLayoutBuilder
 		
 		UBulletEdGraphNode* BulletEdGraphNode = Cast<UBulletEdGraphNode>(SelectObject);
 
-		for (auto BulletAttribute : BulletEdGraphNode->GetBulletAttributeList())
+		IDetailCategoryBuilder& DetailCategoryBuilder = DetailBuilder.EditCategory(TEXT("Attribute"));
+
+		//DetailCategoryBuilder
+		DetailCategoryBuilder.AddGroup(TEXT("MovementAttribute"), FText::FromString(TEXT("MoveAttributeName")));
+		for (auto BulletAttribute : BulletEdGraphNode->GetMoveAttributeList())
 		{
-			DetailCategoryBuilder.AddCustomRow(FText::FromString(TEXT("AttributeName"))).ValueContent()
+			DetailCategoryBuilder.AddCustomRow(FText::FromString(TEXT("MoveAttributeName"))).ValueContent()
 				[
 					SNew(STextBlock).Text(FText::FromName(BulletAttribute.AttributeName))
 				];
 		}
-		
+
+		DetailCategoryBuilder.AddGroup(TEXT("SpecialAttributeName"), FText::FromString(TEXT("SpecialAttributeName")));
+		for (auto BulletAttribute : BulletEdGraphNode->GetSpecialAttributeList())
+		{
+			DetailCategoryBuilder.AddCustomRow(FText::FromString(TEXT("SpecialAttributeName"))).ValueContent()
+				[
+					SNew(STextBlock).Text(FText::FromName(BulletAttribute.AttributeName))
+				];
+		}
 		
 	}
 }

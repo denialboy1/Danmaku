@@ -210,9 +210,14 @@ void FBulletEditor::SaveAsset_Execute()
 			UBulletEdGraphNode* BulletNode = Cast<UBulletEdGraphNode>(Node);
 
 			FBulletData BulletData;
-			for (auto BulletAttribute : BulletNode->GetBulletAttributeList())
+			for (auto BulletAttribute : BulletNode->GetMoveAttributeList())
 			{
-				BulletData.BulletAttributeList.Add(BulletAttribute.AttributeName);
+				BulletData.MoveAttributeList.Add(BulletAttribute.AttributeName);
+			}
+
+			for (auto BulletAttribute : BulletNode->GetSpecialAttributeList())
+			{
+				BulletData.SpecialAttributeList.Add(BulletAttribute.AttributeName);
 			}
 
 			BulletDataArray.Add(BulletData);
@@ -282,24 +287,40 @@ TSharedRef<SDockTab> FBulletEditor::SpawnBulletAttributeListTab(const FSpawnTabA
 	check(Args.GetTabId() == BulletAttributeListTabId);
 
 	//데이터 추가
-	TArray<FBulletAttributePtr> BulletMovementAttributePtrList = { 
-		MakeShareable(new FBulletAttribute(TEXT("Direction"))),
-		MakeShareable(new FBulletAttribute(TEXT("Spiral"))),
-		MakeShareable(new FBulletAttribute(TEXT("Wave"))),
-		MakeShareable(new FBulletAttribute(TEXT("Cycloid"))),
-		MakeShareable(new FBulletAttribute(TEXT("Vortex"))),
-		MakeShareable(new FBulletAttribute(TEXT("Orbit")))
+	TArray<FBulletAttributePtr> BulletMovementAttributePtrList;
+
+	auto AddMoveAttribute = [&](FName InName)
+	{
+		FBulletAttributePtr Attribute = MakeShareable(new FBulletAttributeInfo());
+		Attribute->BulletAttributeType = EBulletAttributeType::Move;
+		Attribute->AttributeName = InName;
+		BulletMovementAttributePtrList.Add(Attribute);
+	};
+	
+	AddMoveAttribute(TEXT("Direction"));
+	AddMoveAttribute(TEXT("Spiral"));
+	AddMoveAttribute(TEXT("Wave"));
+	AddMoveAttribute(TEXT("Cycloid"));
+	AddMoveAttribute(TEXT("Vortex"));
+	AddMoveAttribute(TEXT("Orbit"));
+
+	TArray<FBulletAttributePtr> BulletSpecialAttributePtrList;
+
+	auto AddSpecialAttribute = [&](FName InName)
+	{
+		FBulletAttributePtr Attribute = MakeShareable(new FBulletAttributeInfo());
+		Attribute->BulletAttributeType = EBulletAttributeType::Special;
+		Attribute->AttributeName = InName;
+		BulletSpecialAttributePtrList.Add(Attribute);
 	};
 
-	TArray<FBulletAttributePtr> BulletAttributePtrList = {
-		MakeShareable(new FBulletAttribute(TEXT("Pierce"))),
-		MakeShareable(new FBulletAttribute(TEXT("Reflection"))),
-		MakeShareable(new FBulletAttribute(TEXT("Homing"))),
-		MakeShareable(new FBulletAttribute(TEXT("AroundWall"))),
-		MakeShareable(new FBulletAttribute(TEXT("Returning"))),
-		MakeShareable(new FBulletAttribute(TEXT("Plasma"))),
-		MakeShareable(new FBulletAttribute(TEXT("Time"))),
-	};
+	AddSpecialAttribute(TEXT("Pierce"));
+	AddSpecialAttribute(TEXT("Reflection"));
+	AddSpecialAttribute(TEXT("Homing"));
+	AddSpecialAttribute(TEXT("AroundWall"));
+	AddSpecialAttribute(TEXT("Returning"));
+	AddSpecialAttribute(TEXT("Plasma"));
+	AddSpecialAttribute(TEXT("Time"));
 
 
 	return SNew(SDockTab)
@@ -308,8 +329,8 @@ TSharedRef<SDockTab> FBulletEditor::SpawnBulletAttributeListTab(const FSpawnTabA
 		.TabColorScale(GetTabColorScale())
 		[
 			SNew(SBulletAttributeListTab)
-			.BulletAttributePtrList(BulletAttributePtrList)
-			.BulletMovementAttributePtrList(BulletMovementAttributePtrList)
+			.MoveAttributePtrList(BulletMovementAttributePtrList)
+			.SpecialAttributePtrList(BulletSpecialAttributePtrList)
 		];
 }
 

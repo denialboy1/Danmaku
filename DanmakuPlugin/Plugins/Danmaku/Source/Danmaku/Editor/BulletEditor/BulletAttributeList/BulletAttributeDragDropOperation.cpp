@@ -31,11 +31,12 @@ TSharedPtr<SWidget> FBulletAttributeDragDropOperation::GetDefaultDecorator() con
 
 }
 
-TSharedRef<FBulletAttributeDragDropOperation> FBulletAttributeDragDropOperation::CreateDragDropOperation(FName AttributeName)
+TSharedRef<FBulletAttributeDragDropOperation> FBulletAttributeDragDropOperation::CreateDragDropOperation(FBulletAttributeInfo InBulletAttributeInfo)
 {
 	TSharedRef<FBulletAttributeDragDropOperation> Operation = MakeShareable(new FBulletAttributeDragDropOperation);
 
-	Operation->AttributeName = AttributeName;
+	Operation->AttributeName = InBulletAttributeInfo.AttributeName;
+	Operation->BulletAttributeType = InBulletAttributeInfo.BulletAttributeType;
 	Operation->Construct();
 
 	return Operation;

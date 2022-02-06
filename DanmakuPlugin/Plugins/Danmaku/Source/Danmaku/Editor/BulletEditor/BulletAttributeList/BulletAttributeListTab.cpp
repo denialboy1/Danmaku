@@ -13,7 +13,7 @@ void SBulletAttributeEntryWidget::Construct(const FArguments& Args)
 	HoverImage = &ButtonStyle.Hovered;
 	PressedImage = &ButtonStyle.Pressed;
 
-	BulletAttribute = *Args._BulletAttributePtr.Get();
+	BulletAttributeInfo = *Args._BulletAttributePtr.Get();
 
 	this->ChildSlot
 		[
@@ -22,7 +22,7 @@ void SBulletAttributeEntryWidget::Construct(const FArguments& Args)
 		    .Cursor(EMouseCursor::GrabHand)
 		    [
       			SNew(STextBlock)
-		    	.Text(FText::FromName(BulletAttribute))
+		    	.Text(FText::FromName(BulletAttributeInfo.AttributeName))
 		    ]
 		];
 }
@@ -55,7 +55,9 @@ FReply SBulletAttributeEntryWidget::OnDragDetected(const FGeometry& MyGeometry, 
 
 	if (MouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
-		return FReply::Handled().BeginDragDrop(FBulletAttributeDragDropOperation::CreateDragDropOperation(BulletAttribute));
+		
+
+		return FReply::Handled().BeginDragDrop(FBulletAttributeDragDropOperation::CreateDragDropOperation(BulletAttributeInfo));
 	}
 	else
 	{
@@ -81,31 +83,31 @@ const FSlateBrush* SBulletAttributeEntryWidget::GetBorder() const
 
 void SBulletAttributeListTab::Construct(const FArguments& Args)
 {
-	BulletAttributePtrList = Args._BulletAttributePtrList;
+	MoveAttributePtrList = Args._MoveAttributePtrList;
 
-	BulletMovementAttributePtrList = Args._BulletMovementAttributePtrList;
+	SpecialAttributePtrList = Args._SpecialAttributePtrList;
 
 	this->ChildSlot
 		[
 			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
 			[
-				CreateListView(TEXT("Movement"), BulletMovementAttributePtrList, BulletMovementAttributePtrListView)
+				CreateListView(TEXT("Movement"), MoveAttributePtrList, MoveAttributePtrListView)
 			]
 			+ SVerticalBox::Slot()
 			[
-				CreateListView(TEXT("Attribute"), BulletAttributePtrList, BulletAttributePtrListView)
+				CreateListView(TEXT("Attribute"), SpecialAttributePtrList, SpecialAttributePtrListView)
 			]
 		];
 	
-	if (BulletAttributePtrListView)
+	if (MoveAttributePtrListView)
 	{
-		BulletAttributePtrListView->RequestListRefresh();
+		MoveAttributePtrListView->RequestListRefresh();
 	}
 	
-	if (BulletMovementAttributePtrListView)
+	if (SpecialAttributePtrListView)
 	{
-		BulletMovementAttributePtrListView->RequestListRefresh();
+		SpecialAttributePtrListView->RequestListRefresh();
 	}
 }
 

@@ -6,6 +6,13 @@
 #include "BulletEditorDefine.generated.h"
 
 UENUM()
+enum class EBulletAttributeType
+{
+	Move,
+	Special
+};
+
+UENUM()
 enum class EMoveAttributeList : uint8
 {
 	Direction,
@@ -33,10 +40,12 @@ struct FBulletAttributeInfo
 {
 	GENERATED_BODY()
 
-		FGuid Guid;
+	FGuid Guid;
+
+	EBulletAttributeType BulletAttributeType;
 
 	UPROPERTY()
-		FName AttributeName;
+	FName AttributeName;
 };
 
 USTRUCT()
@@ -44,6 +53,9 @@ struct FBulletData
 {
 	GENERATED_BODY()
 
-		UPROPERTY()
-		TArray<FName> BulletAttributeList;
+	UPROPERTY()
+	TArray<FName> MoveAttributeList;
+
+	UPROPERTY()
+	TArray<FName> SpecialAttributeList;
 };

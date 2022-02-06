@@ -22,7 +22,14 @@ FReply SBulletGraphNode::OnDrop(const FGeometry& MyGeometry, const FDragDropEven
 	
 	if (GraphDropOp.IsValid() )
 	{
-		AddBulletAttribute(GraphDropOp->GetAttributeName());
+		if (GraphDropOp->GetBulletAttributeType() == EBulletAttributeType::Move)
+		{
+			AddBulletMoveAttribute(GraphDropOp->GetAttributeName());
+		}
+		else if(GraphDropOp->GetBulletAttributeType() == EBulletAttributeType::Special)
+		{
+			AddBulletSpecialAttribute(GraphDropOp->GetAttributeName());
+		}
 		return FReply::Handled();
 	}
 	return FReply::Unhandled();
@@ -44,7 +51,16 @@ FReply SBulletGraphNode::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent&
 			UBulletEdGraphNode* BulletGraphNode = Cast<UBulletEdGraphNode>(GraphNode);
 			if (BulletGraphNode)
 			{
-				for (auto SelectedItem : BulletStackEntry->GetListView()->GetSelectedItems())
+				for (auto SelectedItem : BulletStackEntry->GetMoveAttributeListView()->GetSelectedItems())
+				{
+					//데이터 삭제
+					BulletGraphNode->RemoveBulletAttribute(SelectedItem->Guid);
+
+					//위젯 리스트 삭제
+					BulletStackEntry->RemoveListViewItem(SelectedItem->Guid);
+				}
+
+				for (auto SelectedItem : BulletStackEntry->GetSpecialAttributeListView()->GetSelectedItems())
 				{
 					//데이터 삭제
 					BulletGraphNode->RemoveBulletAttribute(SelectedItem->Guid);
@@ -66,34 +82,51 @@ TSharedRef<SWidget> SBulletGraphNode::CreateNodeContentArea()
 	UBulletEdGraphNode* BulletEdGraphNode = Cast<UBulletEdGraphNode>(GraphNode);
 
 	//원본 데이터를 StackNodeEntry 형태로 변경
-	TArray<FBulletStackEntryPtr> BulletStackEntryList;
-	for (auto BulletAttribute : BulletEdGraphNode->GetBulletAttributeList())
+	TArray<FBulletStackEntryPtr> MoveAttributeList;
+	for (auto BulletAttribute : BulletEdGraphNode->GetMoveAttributeList())
 	{
 		FBulletStackEntryPtr BulletStackEntryPtr = FBulletStackEntry::Make();
 		BulletStackEntryPtr->AttributeName = BulletAttribute.AttributeName;
 		BulletStackEntryPtr->Guid = BulletAttribute.Guid;
 
-		BulletStackEntryList.Add(BulletStackEntryPtr);
+		MoveAttributeList.Add(BulletStackEntryPtr);
+	}
+
+	TArray<FBulletStackEntryPtr> SpecialAttributeList;
+	for (auto BulletAttribute : BulletEdGraphNode->GetSpecialAttributeList())
+	{
+		FBulletStackEntryPtr BulletStackEntryPtr = FBulletStackEntry::Make();
+		BulletStackEntryPtr->AttributeName = BulletAttribute.AttributeName;
+		BulletStackEntryPtr->Guid = BulletAttribute.Guid;
+
+		SpecialAttributeList.Add(BulletStackEntryPtr);
 	}
 
 	return SAssignNew(BulletStackEntry, SBulletStackEntry)
-		.BulletAttributeList(BulletStackEntryList);
+		.MoveAttributeList(MoveAttributeList)
+		.SpecialAttributeList(SpecialAttributeList);
 }
 
-void SBulletGraphNode::AddBulletAttribute(FName AttributeName)
+void SBulletGraphNode::AddBulletMoveAttribute(FName AttributeName)
 {
 	UBulletEdGraphNode* BulletEdGraphNode = Cast<UBulletEdGraphNode>(GraphNode);
 	if (IsValid(BulletEdGraphNode))
 	{
-		BulletEdGraphNode->AddBulletAttribute(AttributeName);
+		BulletEdGraphNode->AddMoveBulletAttribute(AttributeName);
 	}
 
 	UpdateGraphNode();
-
-	//if (BulletStackEntry)
-	//{
-	//	BulletStackEntry->AddBulletAttribute(AttributeName);
-	//}
-	
 }
+
+void SBulletGraphNode::AddBulletSpecialAttribute(FName AttributeName)
+{
+	UBulletEdGraphNode* BulletEdGraphNode = Cast<UBulletEdGraphNode>(GraphNode);
+	if (IsValid(BulletEdGraphNode))
+	{
+		BulletEdGraphNode->AddSpecialBulletAttribute(AttributeName);
+	}
+
+	UpdateGraphNode();
+}
+
 

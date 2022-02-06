@@ -2,8 +2,11 @@
 
 #pragma once
 
+#include "Danmaku/Editor/BulletEditor/BulletEditorDefine.h"
+
 #include "CoreMinimal.h"
 #include "Input/DragAndDrop.h"
+
 
 class FBulletAttributeDragDropOperation : public FDragDropOperation
 {
@@ -14,10 +17,13 @@ public:
 
 	virtual TSharedPtr<SWidget> GetDefaultDecorator() const override;
 
-	static TSharedRef<FBulletAttributeDragDropOperation> CreateDragDropOperation(FName AttributeName);
+	static TSharedRef<FBulletAttributeDragDropOperation> CreateDragDropOperation(FBulletAttributeInfo InBulletAttributeInfo);
 
 	FName GetAttributeName() const { return AttributeName; }
 
+	EBulletAttributeType GetBulletAttributeType() const { return BulletAttributeType; }
 private:
 	FName AttributeName;
+
+	EBulletAttributeType BulletAttributeType;
 };

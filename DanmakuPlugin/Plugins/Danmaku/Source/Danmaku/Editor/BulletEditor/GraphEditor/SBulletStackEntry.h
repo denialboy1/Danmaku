@@ -19,12 +19,15 @@ class DANMAKU_API SBulletStackEntry : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SBulletStackEntry) {}
-	SLATE_ARGUMENT(TArray<FBulletStackEntryPtr>, BulletAttributeList)
+	SLATE_ARGUMENT(TArray<FBulletStackEntryPtr>, MoveAttributeList)
+	SLATE_ARGUMENT(TArray<FBulletStackEntryPtr>, SpecialAttributeList)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& Args);
 public:
-	TSharedPtr<SBulletStackEntryListView> GetListView() {return ListView;}
+	TSharedPtr<SBulletStackEntryListView> GetMoveAttributeListView() {return MoveAttributeListView;}
+
+	TSharedPtr<SBulletStackEntryListView> GetSpecialAttributeListView() { return SpecialAttributeListView; }
 
 	void RemoveListViewItem(FGuid InGuid);
 private:
@@ -34,10 +37,12 @@ private:
 	//ListView에서 한줄씩 추가될떄마다 호출되는 함수 : 바인딩으로 사용할 예정
 	TSharedRef<ITableRow> GenerateListRow(FBulletStackEntryPtr BulletStackEntry, const TSharedRef<STableViewBase>& OwnerTable);
 private:
-	//SAssignNew때 보관할 리스트 변수
-	TSharedPtr<SBulletStackEntryListView> ListView;
+	TSharedPtr<SBulletStackEntryListView> MoveAttributeListView;
 
-	// ListView에 전달될 데이터 목록
-	TArray<FBulletStackEntryPtr> BulletStackEntryList;
+	TArray<FBulletStackEntryPtr> MoveAttributeList;
+
+	TSharedPtr<SBulletStackEntryListView> SpecialAttributeListView;
+
+	TArray<FBulletStackEntryPtr> SpecialAttributeList;
 
 };
