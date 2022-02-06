@@ -13,7 +13,7 @@ class SBulletGraphTab : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SBulletGraphTab) {}
-	SLATE_ARGUMENT(TArray<FBulletEditorBulletData>, BulletDataArray)
+	SLATE_ARGUMENT(TArray<FBulletData>, BulletDataArray)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);

@@ -5,19 +5,12 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Danmaku/Editor/BulletEditor/BulletEditorBulletAttribute.h"
+#include "BulletEditorDefine.h"
 #include "BulletFactory.generated.h"
 
 /**
  * 
  */
-USTRUCT()
-struct FBulletEditorBulletData
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	TArray<FName> BulletAttributeList;
-};
 
 
 UCLASS(EditInlineNew)
@@ -26,11 +19,11 @@ class DANMAKU_API UBulletFactory : public UObject
 	GENERATED_BODY()
 
 public:
-	TArray<FBulletEditorBulletData> GetBulletDataArray() { return BulletDataArray; }
-	void SetBulletDataArray(TArray<FBulletEditorBulletData>& InBulletDataArray) { BulletDataArray = InBulletDataArray; }
+	TArray<FBulletData> GetBulletDataArray() { return BulletDataArray; }
+	void SetBulletDataArray(TArray<FBulletData>& InBulletDataArray) { BulletDataArray = InBulletDataArray; }
 
 private:
 	UPROPERTY()
-	TArray<FBulletEditorBulletData> BulletDataArray;
+	TArray<FBulletData> BulletDataArray;
 
 };

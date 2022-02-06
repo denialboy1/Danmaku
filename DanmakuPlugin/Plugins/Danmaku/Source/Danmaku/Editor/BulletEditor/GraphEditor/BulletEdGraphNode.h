@@ -6,21 +6,13 @@
 #include "EdGraph/EdGraphNode.h"
 #include "EdGraphUtilities.h"
 #include "Danmaku/Editor/BulletEditor/GraphEditor/SBulletGraphNode.h"
+#include "Danmaku/Editor/BulletEditor/BulletEditorDefine.h"
 #include "BulletEdGraphNode.generated.h"
 
 /**
  * 
  */
-USTRUCT()
-struct FBulletAttributeInfo
-{
-	GENERATED_BODY()
 
-	FGuid Guid;
-
-	UPROPERTY()
-	FName AttributeName;
-};
 
 UCLASS()
 class DANMAKU_API UBulletEdGraphNode : public UEdGraphNode
@@ -52,9 +44,15 @@ public:
 	int32 GetNodeIndex() { return NodeIndex; }
 private:
 	//여기에 리스트 정보가 들어가야함
-	UPROPERTY(EditAnywhere, Category = "BulletAttributeList")
-	TArray<FBulletAttributeInfo> BulletAttributeList;
+	UPROPERTY(EditAnywhere, Category = "MoveAttributeList")
+		TArray<FBulletAttributeInfo> BulletAttributeList;
 
+	UPROPERTY(EditAnywhere, Category = "MoveAttributeList")
+	TArray<FBulletAttributeInfo> MoveAttributeList;
+
+	UPROPERTY(EditAnywhere, Category = "SpecialAttributeList")
+	TArray<FBulletAttributeInfo> SpecialAttributeList;
+	
 	int32 NodeIndex;
 };
 

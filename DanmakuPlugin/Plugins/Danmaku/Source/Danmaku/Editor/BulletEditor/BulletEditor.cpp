@@ -204,12 +204,12 @@ void FBulletEditor::SaveAsset_Execute()
 	//여기서 그래프 관련 데이터 저장.
 	if (BulletGraphTab && EditingObject)
 	{
-		TArray<FBulletEditorBulletData> BulletDataArray;
+		TArray<FBulletData> BulletDataArray;
 		for (auto Node : BulletGraphTab->GetBulletEdGraph()->Nodes)
 		{
 			UBulletEdGraphNode* BulletNode = Cast<UBulletEdGraphNode>(Node);
 
-			FBulletEditorBulletData BulletData;
+			FBulletData BulletData;
 			for (auto BulletAttribute : BulletNode->GetBulletAttributeList())
 			{
 				BulletData.BulletAttributeList.Add(BulletAttribute.AttributeName);
